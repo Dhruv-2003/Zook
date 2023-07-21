@@ -7,6 +7,7 @@ import {
 import { Web3Modal } from "@web3modal/react";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import { gnosis, sepolia } from "wagmi/chains";
+import { AuthProvider } from "../auth-context/auth";
 
 const chains = [gnosis, sepolia];
 const projectId = "e332421b450f94125a7d3b2a85b27e49";
@@ -22,10 +23,12 @@ const ethereumClient = new EthereumClient(wagmiConfig, chains);
 function MyApp({ Component, pageProps }) {
   return (
     <>
-      <WagmiConfig config={wagmiConfig}>
-        <Component {...pageProps} />
-      </WagmiConfig>
-      <Web3Modal projectId={projectId} ethereumClient={ethereumClient} />
+      <AuthProvider>
+        <WagmiConfig config={wagmiConfig}>
+          <Component {...pageProps} />
+        </WagmiConfig>
+        <Web3Modal projectId={projectId} ethereumClient={ethereumClient} />
+      </AuthProvider>
     </>
   );
 }
