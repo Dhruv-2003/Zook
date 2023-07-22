@@ -132,21 +132,18 @@ const SafeAccountCreation = () => {
 
   return (
     <div>
-      {/* <button onClick={login}>login</button> */}
       <button
-        className="bg-blue-500 text-500 px-3 py-2 rounded-xl font-semibold text-white"
+        className="px-7 mx-5 py-1.5 rounded-xl bg-white text-indigo-500 border border-indigo-500 font-semibold hover:scale-105 duration-200"
         onClick={createSafeWallet}
       >
         Create Safe
       </button>
-      <button
+      {/* <button
         className="bg-blue-500 text-500 px-3 py-2 rounded-xl font-semibold text-white"
         onClick={enableModule}
       >
         Enable Module
-      </button>
-
-      {/* <button onClick={getUserSafe}>get</button> */}
+      </button> */}
     </div>
   );
 };
