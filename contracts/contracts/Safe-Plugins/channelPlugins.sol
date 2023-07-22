@@ -21,11 +21,6 @@ contract ChannelPlugin is BasePluginWithEventMetadata {
         )
     {}
 
-    function setMaxFeePerToken(address token, uint256 maxFee) external {
-        maxFeePerToken[msg.sender][token] = maxFee;
-        emit MaxFeeUpdated(msg.sender, token, maxFee);
-    }
-
     function executeAction(
         ISafeProtocolManager manager,
         ISafe safe,
