@@ -1,9 +1,19 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Divider } from "@chakra-ui/react";
 import { useAuth } from "../auth-context/auth";
+import {
+  encodePacked,
+  hashMessage,
+  parseEther,
+  recoverAddress,
+  recoverMessageAddress,
+} from "viem";
+import { Contract } from "ethers";
+import { channelModule_Goerli } from "../constants/contracts";
+import { Module_ABI } from "../constants/abi";
 
 const Receiver = () => {
-  const { xmtp_client, peerAddress } = useAuth();;
+  const { xmtp_client, peerAddress } = useAuth();
   const [isOnNetwork, setIsOnNetwork] = useState(false);
   const [incomingMessages, setIncomingMessages] = useState();
   const [receipt, setReceipt] = useState();
@@ -21,20 +31,55 @@ const Receiver = () => {
       console.log(messagesInConversation);
     }
     const messageLength = await incomingMessages.length;
-    const lastmessage = incomingMessages[messageLength - 1].content
-    console.log(lastmessage)
+    const lastmessage = incomingMessages[messageLength - 1].content;
+    console.log(lastmessage);
   };
 
-  function split(){
-    const text = ""
-    const partial = text.split(",")
-    const partialmessage = partial[0].split(":")
-    const safeAddressFromXmtp = partialmessage[2]
-    const partialamount = partial[2].split(":")
-    const owedAmountByXmtp = partialamount[1]
-    console.log(safeAddressFromXmtp)
-    console.log(owedAmountByXmtp)
+  function split() {
+    const text = "";
+    const partial = text.split(",");
+    const partialmessage = partial[0].split(":");
+    const safeAddressFromXmtp = partialmessage[2];
+    const partialamount = partial[2].split(":");
+    const owedAmountByXmtp = partialamount[1];
+    console.log(safeAddressFromXmtp);
+    console.log(owedAmountByXmtp);
   }
+
+  const verifySignatures = async (safeAddress, amount, sig, senderAddress) => {
+    const msg = encodePacked(["address", "uint256"], [safeAddress, amount]);
+    const hashedMessage = hashMessage({ raw: msg });
+
+    const recoveredAddress = await recoverMessageAddress({
+      message: { raw: msg },
+      signature: sig,
+    });
+
+    if (recoveredAddress == senderAddress) {
+      console.log("Signature came from the right sender");
+    }
+  };
+
+  const withdrawFunds = async (safeAddress, amount, sig) => {
+    const msg = encodePacked(["address", "uint256"], [safeAddress, amount]);
+    const hashedMessage = hashMessage({ raw: msg });
+
+    const formattedAmount = parseEther(amount);
+
+    const Module_contract = new Contract(
+      channelModule_Goerli,
+      Module_ABI,
+      signer
+    );
+
+    // either store channel ID in the XMTP Reciept only
+    Module_contract.executeWithdraw(
+      channelId,
+      hashMessage,
+      sig,
+      formattedAmount
+    );
+  };
 
   return (
     <div className="w-screen">
