@@ -21,11 +21,17 @@ import {
   Button,
 } from "@chakra-ui/react";
 import Chat from "../components/chat";
-import { ethers } from "ethers";
+import { Contract, ethers } from "ethers";
 import { useAuth } from "../auth-context/auth";
 import { getUserSafe } from "../components/safemethods";
 import { EthersAdapter } from "@safe-global/protocol-kit";
 import Safe from "@safe-global/protocol-kit";
+import {
+  encodePacked,
+  hashMessage,
+  recoverAddress,
+  recoverMessageAddress,
+} from "viem";
 
 const Sender = () => {
   const { safeSdk, signer, setSafeSDK, provider } = useAuth();
@@ -84,6 +90,10 @@ const Sender = () => {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const createNewChannel = () => {
+    const contract = new Contract(Module);
   };
 
   return (

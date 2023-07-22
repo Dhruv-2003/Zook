@@ -23,7 +23,7 @@ export default function Home() {
         0,
         10 ** 15
       );
-      console.log(eas)
+      console.log(eas);
     } catch (error) {
       console.log(error);
     }
@@ -74,7 +74,7 @@ export default function Home() {
           <div>
             <button onClick={() => createAttestations()}>eas</button>
           </div>
-          <SafeAccountCreation/>
+          <SafeAccountCreation />
         </div>
       </div>
     </div>

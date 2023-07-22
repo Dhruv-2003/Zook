@@ -78,6 +78,19 @@ const Notifications = () => {
     }
   };
 
+  const startAConversation = async function () {
+    const xmtpClient = clientRef.current;
+    if (!xmtpClient) {
+      initXmtp();
+    }
+    const conversation = await xmtpClient.conversations.newConversation(
+      PEER_ADDRESS
+    );
+    console.log(conversation);
+    console.log(conversation.messages());
+    convRef.current = conversation;
+  };
+
   return (
     <div>
       {isOnNetwork != false ? (
@@ -86,7 +99,7 @@ const Notifications = () => {
         </>
       ) : (
         <button
-          onClick={initXmtp}
+          onClick={startAConversation}
           className="bg-blue-500 text-500 px-3 py-2 rounded-xl font-semibold text-white"
         >
           Connect to XMTP
