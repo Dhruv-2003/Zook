@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { enableModule, getUserSafe } from "./safemethods";
+import { getUserSafe } from "./safemethods";
 import { EthersAdapter } from "@safe-global/protocol-kit";
 import { ethers } from "ethers";
 import Safe, { SafeFactory } from "@safe-global/protocol-kit";
@@ -8,8 +8,16 @@ import { useRouter } from "next/router";
 import { useAuth } from "../auth-context/auth";
 
 const SafeAccountCreation = () => {
-  const { provider, setProvider, signer, setSigner } =
-    useAuth();
+  const {
+    provider,
+    setProvider,
+    signer,
+    setSigner,
+    safeSdk,
+    setSafeSDK,
+    safeAddress,
+    setSafeAddress,
+  } = useAuth();
 
   // useEffect(() => {
   //   if (!safeAuth) {
@@ -29,17 +37,15 @@ const SafeAccountCreation = () => {
   const [isLoading, setisLoading] = useState(false);
 
   const router = useRouter();
-  const [safeSdk, setSafeSDK] = useState();
-  const [safeAddress, setSafeAddress] = useState();
 
-  const login = async() => {
+  const login = async () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     setProvider(provider);
     const signer = provider.getSigner();
     setSigner(signer);
     const eoa = await signer.getAddress();
     console.log(eoa);
-    console.log(provider)
+    console.log(provider);
   };
 
   const createSafeWallet = async () => {
@@ -103,7 +109,7 @@ const SafeAccountCreation = () => {
       setSafeSDK(safeSdk);
       setSafeAddress(newSafeAddress);
 
-      // enableModule(safeSDK, newSafeAddress);
+      enableModule(safeSdk, newSafeAddress);
 
       /// On Continue, direct to the home page
       setisLoading(false);
@@ -113,9 +119,19 @@ const SafeAccountCreation = () => {
     }
   };
 
+  const enableModule = async () => {
+    const moduleAddress = "0x2B74083B670009fA63e7CceC16A0400cc202f7c8";
+    const safeTransaction = await safeSdk.createEnableModuleTx(moduleAddress);
+    const txResponse = await safeSdk.executeTransaction(safeTransaction);
+    await txResponse.transactionResponse?.wait();
+  
+    console.log(txResponse);
+    return txResponse;
+  };
+
   return (
     <div>
-       <button onClick={login}>login</button>
+      <button onClick={login}>login</button>
       <button onClick={createSafeWallet}>Create Safe</button>
       <button onClick={getUserSafe}>get</button>
     </div>
