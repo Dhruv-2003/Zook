@@ -8,6 +8,8 @@ import { Web3Modal } from "@web3modal/react";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import { gnosis, sepolia } from "wagmi/chains";
 import { AuthProvider } from "../auth-context/auth";
+import { Navbar } from "../components/navbar";
+import { ChakraProvider } from "@chakra-ui/react";
 
 const chains = [gnosis, sepolia];
 const projectId = "e332421b450f94125a7d3b2a85b27e49";
@@ -23,12 +25,15 @@ const ethereumClient = new EthereumClient(wagmiConfig, chains);
 function MyApp({ Component, pageProps }) {
   return (
     <>
-      <AuthProvider>
-        <WagmiConfig config={wagmiConfig}>
-          <Component {...pageProps} />
-        </WagmiConfig>
-        <Web3Modal projectId={projectId} ethereumClient={ethereumClient} />
-      </AuthProvider>
+      <ChakraProvider>
+        <AuthProvider>
+          <WagmiConfig config={wagmiConfig}>
+            <Navbar />
+            <Component {...pageProps} />
+          </WagmiConfig>
+          <Web3Modal projectId={projectId} ethereumClient={ethereumClient} />
+        </AuthProvider>
+      </ChakraProvider>
     </>
   );
 }
