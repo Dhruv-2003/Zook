@@ -1,6 +1,9 @@
 import React, { createContext } from "react";
 import { useContext, useState, useEffect } from "react";
 import { ethers } from "ethers";
+import { getUserSafe } from "../components/safemethods";
+import { EthersAdapter } from "@safe-global/protocol-kit";
+import Safe from "@safe-global/protocol-kit";
 
 const AuthContext = createContext();
 
@@ -21,7 +24,23 @@ export function AuthProvider({ children }) {
       const signer = provider.getSigner();
       setSigner(signer);
     }
+    getSafe()
   }, []);
+
+  async function getSafe() {
+    if (provider && signer) {
+      const ethAdapter = new EthersAdapter({
+        ethers,
+        signerOrProvider: signer,
+      });
+      const safeAddress = await getUserSafe(signer);
+      if (safeAddress) {
+        const safeSDK = await Safe.create({ ethAdapter, safeAddress });
+        setSafeSDK(safeSDK);
+        console.log(safeSdk);
+      }
+    }
+  }
 
   const value = {
     setProvider,

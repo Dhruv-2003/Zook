@@ -124,9 +124,9 @@ const SafeAccountCreation = () => {
 
   return (
     <div>
-      <button onClick={login}>login</button>
-      <button onClick={createSafeWallet}>Create Safe</button>
-      <button onClick={getUserSafe}>get</button>
+      {/* <button onClick={login}>login</button> */}
+      <button className="bg-blue-500 text-500 px-3 py-2 rounded-xl font-semibold text-white" onClick={createSafeWallet}>Create Safe</button>
+      {/* <button onClick={getUserSafe}>get</button> */}
     </div>
   );
 };
