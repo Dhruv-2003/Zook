@@ -53,20 +53,19 @@ function Chat({ client, messageHistory, conversation }) {
     }
   };
   return (
-    <div className={styles.Chat}>
-      <div className={styles.messageContainer}>
+    <div>
+      <div>
         <MessageList messages={messageHistory} />
       </div>
-      <div className={styles.inputContainer}>
+      <div >
         <input
           type="text"
-          className={styles.inputField}
           onKeyPress={handleInputChange}
           onChange={handleInputChange}
           value={inputValue}
           placeholder="Type your text here "
         />
-        <button className={styles.sendButton} onClick={handleSend}>
+        <button onClick={handleSend}>
           &#128073;
         </button>
       </div>
