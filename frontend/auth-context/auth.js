@@ -1,5 +1,6 @@
 import React, { createContext } from "react";
 import { useContext, useState, useEffect } from "react";
+import {ethers} from "ethers"
 
 const AuthContext = createContext();
 

@@ -12,7 +12,7 @@ import { ethers } from "ethers";
 
 // Choose the attestations on whatever chain you want to
 const EASContractAddress = "0xC2679fBD37d54388Ce493F1DB75320D236e1815e"; // Sepolia v0.26
-const EASVersion = 0.26;
+const EASVersion = "0.26";
 const CHAINID = 11155111;
 
 const SchemaUID =
@@ -24,6 +24,7 @@ const EAS_CONFIG = {
   address: EASContractAddress,
   version: EASVersion, // 0.26
   chainId: CHAINID,
+
 };
 
 class EASService {
@@ -85,6 +86,9 @@ class EASService {
     ]); // the value of the encoded data can be chosen by the inputs we want it to be
 
     const address = await this.signer.getAddress();
+    console.log(address)
+    console.log(this.signer)
+    console.log(this.easClient)
 
     const tx = await this.easClient.attest({
       schema: SchemaUID,
@@ -110,6 +114,7 @@ class EASService {
     totalOwed
   ) {
     const timestamp = Math.floor(Date.now() / 1000);
+    console.log(timestamp)
     const address = await this.signer.getAddress();
     const schemaEncoder = new SchemaEncoder(rawSchema);
 
@@ -121,8 +126,10 @@ class EASService {
       { name: "ChannelID", value: channelId, type: "uint16" },
       { name: "TotalOwed", value: totalOwed, type: "uint128" },
     ]);
+    console.log(encodedData)
+    const offChainClient= new Offchain(EAS_CONFIG);
 
-    const offchainAttestation = await offchain.signOffchainAttestation(
+    const offchainAttestation = await offChainClient.signOffchainAttestation(
       {
         recipient: address,
         // Unix timestamp of when attestation expires. (0 for no expiration)
@@ -136,10 +143,12 @@ class EASService {
           "0x0000000000000000000000000000000000000000000000000000000000000000",
         data: encodedData,
       },
-      signer
+      this.signer
     );
     console.log(offchainAttestation);
 
     // This function will return a signed off-chain attestation object containing the UID, signature, and other relevant information. You can then share this object with the intended recipient or store it for future use.s
   }
 }
+
+export default EASService

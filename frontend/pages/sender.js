@@ -20,6 +20,7 @@ import {
   useDisclosure,
   Button,
 } from "@chakra-ui/react";
+import Chat from "../components/chat";
 
 const Sender = () => {
   const {
@@ -127,6 +128,7 @@ const Sender = () => {
             </Drawer>
           </div>
         </div>
+        <Chat/>
       </div>
     </div>
   );
