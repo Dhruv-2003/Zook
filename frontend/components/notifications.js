@@ -5,8 +5,7 @@ import { Web3Button } from "@web3modal/react";
 import { useAuth } from "../auth-context/auth";
 
 const Notifications = () => {
-  const { setxmtp_client, xmtp_client,  convRef, clientRef } = useAuth();
-  const PEER_ADDRESS = "0x9B855D0Edb3111891a6A0059273904232c74815D";
+  const { setxmtp_client, xmtp_client,  convRef, clientRef, peerAddress } = useAuth();
   const [isOnNetwork, setIsOnNetwork] = useState(false);
 
   // useEffect(() => {
@@ -40,7 +39,7 @@ const Notifications = () => {
   const sendMessage = async () => {
     const xmtpClient = clientRef.current;
     const conversation = await xmtpClient.conversations.newConversation(
-      PEER_ADDRESS
+      peerAddress
     );
     await conversation.send("new message");
     console.log(conversation);
@@ -58,9 +57,9 @@ const Notifications = () => {
       // Create the XMTP client
       const xmtp = await Client.create(signer, { env: "production" });
       //Create or load conversation with Gm bot
-      if (await xmtp?.canMessage(PEER_ADDRESS)) {
+      if (await xmtp?.canMessage(peerAddress)) {
         const conversation = await xmtp.conversations.newConversation(
-          PEER_ADDRESS
+          peerAddress
         );
         convRef.current = conversation;
         console.log(convRef);
@@ -84,7 +83,7 @@ const Notifications = () => {
       initXmtp();
     }
     const conversation = await xmtpClient.conversations.newConversation(
-      PEER_ADDRESS
+      peerAddress
     );
     console.log(conversation);
     console.log(conversation.messages());

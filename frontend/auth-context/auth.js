@@ -20,6 +20,7 @@ export function AuthProvider({ children }) {
   const [xmtp_client, setxmtp_client] = useState(null)
   const convRef = useRef(null);
   const clientRef = useRef(null);
+  const [peerAddress, setPeerAddress] = useState();
 
   useEffect(() => {
     if (!provider) {
@@ -58,7 +59,9 @@ export function AuthProvider({ children }) {
     xmtp_client,
     setxmtp_client,
     convRef,
-    clientRef
+    clientRef,
+    peerAddress,
+    setPeerAddress
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

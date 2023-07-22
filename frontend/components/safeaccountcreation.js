@@ -65,19 +65,19 @@ const SafeAccountCreation = () => {
       const owners = [`${await signer.getAddress()}`];
       const threshold = 1;
 
-      const safeAddress = await getUserSafe(signer);
-      console.log(safeAddress);
-      if (safeAddress) {
-        const safeSDK = await Safe.create({ ethAdapter, safeAddress });
+      // const safeAddress = await getUserSafe(signer);
+      // console.log(safeAddress);
+      // if (safeAddress) {
+      //   const safeSDK = await Safe.create({ ethAdapter, safeAddress });
 
-        // await enableModule(safeSDK,recoveryModuleContractAddress)
-        setSafeSDK(safeSDK);
-        setSafeAddress(safeAddress);
-        setsafeSetupComplete(true);
-        setisLoading(false);
+      //   // await enableModule(safeSDK,recoveryModuleContractAddress)
+      //   setSafeSDK(safeSDK);
+      //   setSafeAddress(safeAddress);
+      //   setsafeSetupComplete(true);
+      //   setisLoading(false);
 
-        return;
-      }
+      //   return;
+      // }
 
       const safeAccountConfig = {
         owners,
@@ -102,7 +102,7 @@ const SafeAccountCreation = () => {
       setSafeSDK(safeSdk);
       setSafeAddress(newSafeAddress);
 
-      // enableModule(safeSdk, newSafeAddress);
+      enableModule(safeSdk);
 
       /// On Continue, direct to the home page
       setisLoading(false);
@@ -112,15 +112,15 @@ const SafeAccountCreation = () => {
     }
   };
 
-  const enableModule = async () => {
+  const enableModule = async (safesd) => {
     // createSafeWallet();
-    console.log(safeSdk);
+    console.log(safesd);
     const moduleAddress = "0x42f5d36cb22f7abb5b98ebe022aee15f2621a20e";
-    const isEnabled = await safeSdk.isModuleEnabled(moduleAddress);
+    const isEnabled = await safesd.isModuleEnabled(moduleAddress);
 
     if (!isEnabled) {
-      const safeTransaction = await safeSdk.createEnableModuleTx(moduleAddress);
-      const txResponse = await safeSdk.executeTransaction(safeTransaction);
+      const safeTransaction = await safesd.createEnableModuleTx(moduleAddress);
+      const txResponse = await safesd.executeTransaction(safeTransaction);
       await txResponse.transactionResponse?.wait();
 
       console.log(txResponse);

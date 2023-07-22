@@ -72,9 +72,7 @@ export default function Home() {
             </div>
           </div>
           <div>
-            <button onClick={() => createAttestations()}>eas</button>
           </div>
-          <SafeAccountCreation />
         </div>
       </div>
     </div>
