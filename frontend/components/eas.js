@@ -3,6 +3,7 @@ import {
   Offchain,
   SchemaEncoder,
   SchemaRegistry,
+  createOffchainURL,
 } from "@ethereum-attestation-service/eas-sdk";
 import { ethers } from "ethers";
 
@@ -84,7 +85,7 @@ class EASService {
       { name: "Reciever", value: receiver, type: "address" },
       { name: "TxAmount", value: txAmount, type: "uint256" },
       { name: "SafeChannel", value: safeAddress, type: "address" },
-      { name: "ChannelID", value: channelId, type: "uint16" },
+      { name: "ChannelID", value: channelId, type: "uint32" },
       { name: "TotalOwed", value: totalOwed, type: "uint256" },
     ]); // the value of the encoded data can be chosen by the inputs we want it to be
 
@@ -126,30 +127,38 @@ class EASService {
       { name: "Reciever", value: receiver, type: "address" },
       { name: "TxAmount", value: txAmount, type: "uint256" },
       { name: "SafeChannel", value: safeAddress, type: "address" },
-      { name: "ChannelID", value: channelId, type: "uint16" },
+      { name: "ChannelID", value: channelId, type: "uint32" },
       { name: "TotalOwed", value: totalOwed, type: "uint256" },
     ]);
     console.log(encodedData);
     const offChainClient = new Offchain(EAS_CONFIG, 1);
 
-    const offchainAttestation = await offChainClient.signOffchainAttestation(
-      {
-        recipient: address,
-        // Unix timestamp of when attestation expires. (0 for no expiration)
-        expirationTime: 0,
-        // Unix timestamp of current time
-        time: timestamp,
-        revocable: true,
-        nonce: 0,
-        schema: SchemaUID,
-        version: 1,
-        refUID:
-          "0x0000000000000000000000000000000000000000000000000000000000000000",
-        data: encodedData,
-      },
-      this.signer
-    );
-    console.log(offchainAttestation);
+    const signedoffchainAttestation =
+      await offChainClient.signOffchainAttestation(
+        {
+          recipient: address,
+          // Unix timestamp of when attestation expires. (0 for no expiration)
+          expirationTime: 0,
+          // Unix timestamp of current time
+          time: timestamp,
+          revocable: true,
+          nonce: 0,
+          schema: SchemaUID,
+          version: 1,
+          refUID:
+            "0x0000000000000000000000000000000000000000000000000000000000000000",
+          data: encodedData,
+        },
+        this.signer
+      );
+    console.log(signedoffchainAttestation);
+
+    const url = await createOffchainURL({
+      sig: signedoffchainAttestation,
+      signer: address,
+    });
+
+    console.log(url);
 
     // This function will return a signed off-chain attestation object containing the UID, signature, and other relevant information. You can then share this object with the intended recipient or store it for future use.s
   }

@@ -65,7 +65,7 @@ const SafeAccountCreation = () => {
       });
 
       const safeService = new SafeApiKit({
-        txServiceUrl: "https://safe-transaction-gnosis-chain.safe.global",
+        txServiceUrl: "https://safe-transaction-goerli.safe.global",
         ethAdapter,
       });
 
@@ -124,7 +124,7 @@ const SafeAccountCreation = () => {
     const safeTransaction = await safeSdk.createEnableModuleTx(moduleAddress);
     const txResponse = await safeSdk.executeTransaction(safeTransaction);
     await txResponse.transactionResponse?.wait();
-  
+
     console.log(txResponse);
     return txResponse;
   };
