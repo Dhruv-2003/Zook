@@ -14,6 +14,10 @@ contract ERC1155Recepient is
 {
     address public moduleManager;
 
+    //  Sender  => Token ID
+    mapping(address => uint) public senderTokenInfo;
+    uint public totalTokenIdsGenerated = 1;
+
     /*======================== Constructor Functions ========================*/
     /**
      * @dev Intialise the Educator Badge NFT Collections
@@ -35,6 +39,12 @@ contract ERC1155Recepient is
     function setManager(address _newManager) public onlyOwner {
         moduleManager = _newManager;
         _;
+    }
+
+    function createTokenForSender() public returns (uint tokenId) {
+        tokenId = totalTokenIdsGenerated;
+        senderTokenInfo[msg.sender] = tokenId;
+        totalTokenIdsGenerated += 1;
     }
 
     /**

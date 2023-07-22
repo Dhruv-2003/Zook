@@ -24,6 +24,13 @@ import {
 } from "viem";
 import SafeAccountCreation from "../components/safeaccountcreation";
 
+import {
+  ERC1155NFTRecepeint_Goerli,
+  channelModule_Goerli,
+} from "../constants/contracts";
+import { ERC1155Recepient_ABI, Module_ABI } from "../constants/abi";
+import { usePublicClient, useWalletClient } from "wagmi";
+
 const Sender = () => {
   const { safeSdk, signer, setSafeSDK, provider } = useAuth();
   const {
@@ -31,6 +38,9 @@ const Sender = () => {
     onOpen: onOpen1,
     onClose: onClose1,
   } = useDisclosure();
+
+  const publicClient = usePublicClient();
+  const { data: walletClient } = useWalletClient();
 
   async function getSafe() {
     if (provider && signer) {
@@ -48,6 +58,41 @@ const Sender = () => {
     }
   }
 
+  const getUserTokenId = async () => {
+    const NFT_Contract = new Contract(
+      ERC1155NFTRecepeint_Goerli,
+      ERC1155Recepient_ABI,
+      provider
+    );
+
+    const tokenId = await NFT_Contract.senderTokenInfo(senderAddress);
+  };
+
+  const createNewChannel = async (recepient, duration) => {
+    // creates a New Safe for this wallet , Channel specific
+    // enable Module
+
+    // Add record in the module
+
+    const module_contract = new Contract(
+      channelModule_Goerli,
+      Module_ABI,
+      signer
+    );
+
+    const tx = await module_contract.createChannel(
+      safeAddress,
+      recepient,
+      duration,
+      tokenId
+    );
+
+    await tx.wait();
+
+    console.log(tx);
+  };
+
+  // Need to add the funds before to the Channel
   const addFundsToSafe = async () => {
     try {
       await getSafe();
@@ -77,8 +122,22 @@ const Sender = () => {
     }
   };
 
-  const createNewChannel = () => {
-    const contract = new Contract(Module);
+  const payRecepientViaChannel = async () => {
+    /// generate the Message to be signed
+    const msg = generateSignMessage(safeAddress, totalAmount);
+
+    /// sign the Message
+    const signature = await walletClient.signMessage(msg);
+
+    /// create an attestation
+
+    /// send an XMTP message along with signature itself
+  };
+
+  const generateSignMessage = (safeAddress, totalAmount) => {
+    // safeAddress , totalOwedAmount
+    const msg = encodePacked(["address", "uint256"], [safeAddress, amount]);
+    return msg;
   };
 
   return (
