@@ -1,5 +1,5 @@
 import React, { createContext } from "react";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 
 const AuthContext = createContext();
 
@@ -13,13 +13,24 @@ export function AuthProvider({ children }) {
   const [safeSdk, setSafeSDK] = useState();
   const [safeAddress, setSafeAddress] = useState();
 
+  useEffect(() => {
+    if (!provider) {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      setProvider(provider);
+      const signer = provider.getSigner();
+      setSigner(signer);
+    }
+  }, []);
+
   const value = {
     setProvider,
     provider,
     signer,
     setSigner,
-    safeSdk, setSafeSDK,
-    safeAddress, setSafeAddress
+    safeSdk,
+    setSafeSDK,
+    safeAddress,
+    setSafeAddress,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

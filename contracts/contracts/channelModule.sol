@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: LGPL-3.0-only
 pragma solidity >=0.8.0 <0.9.0;
 
+import "./ERC1155Recepient.sol";
+
 /// execWill start for swapping the owner
 interface GnosisSafe {
     enum Operation {
@@ -22,12 +24,18 @@ interface GnosisSafe {
 }
 
 contract ChannelModule {
+    ERC1155Recepient public recepientNFT;
+
     // will store some channel infos
     struct ChannelData {
         address sender;
     }
 
     mapping(uint => ChannelData) public channelInfos;
+
+    constructor(address recepientNFTAddr) {
+        recepientNFT = ERC1155Recepient(recepientNFTAddr);
+    }
 
     // mint a NFT to the Reciever when the channel is started
     function createChannel() public {}
