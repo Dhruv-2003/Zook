@@ -115,7 +115,7 @@ const SafeAccountCreation = () => {
   const enableModule = async () => {
     // createSafeWallet();
     console.log(safeSdk);
-    const moduleAddress = "0xE16A91E4f873DeeAfA675AAE592961ceafA5E44B";
+    const moduleAddress = "0x42f5d36cb22f7abb5b98ebe022aee15f2621a20e";
     const isEnabled = await safeSdk.isModuleEnabled(moduleAddress);
 
     if (!isEnabled) {
