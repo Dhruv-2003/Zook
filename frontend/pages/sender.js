@@ -61,15 +61,42 @@ const Sender = () => {
   useEffect(() => {
     if (provider) {
       setIsLoggedIn(true);
+      getUserTokenId();
     }
   }, [provider]);
+
+  useEffect(() => {
+    loadConversations();
+  }, [xmtp_client]);
+
+  const loadConversations = async () => {
+    const allConversations = await xmtp_client.conversations.list();
+    for (const conversation of allConversations) {
+      const messagesInConversation = await conversation.messages();
+      setIncomingMessages(messagesInConversation);
+      console.log(messagesInConversation);
+    }
+    const messageLength = await incomingMessages.length;
+    const lastmessage = incomingMessages[messageLength - 1].content
+    console.log(lastmessage)
+  };
+
+  function split(){
+    const text = ""
+    const partial = text.split(",")
+    const partialmessage = partial[1].split(":")
+    const safeAddressFromXmtp = partialmessage[1]
+    const partialamount = partial[2].split(":")
+    const owedAmountByXmtp = partialamount[1]
+    console.log(safeAddressFromXmtp)
+    console.log(owedAmountByXmtp)
+  }
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [safeSetupComplete, setsafeSetupComplete] = useState(false);
   const [isLoading, setisLoading] = useState(false);
   const [channelDuration, setChannelDuration] = useState("");
   const [incomingMessages, setIncomingMessages] = useState();
-  const [payAmount, setPayAmount] = useState();
 
   const router = useRouter();
 
@@ -201,8 +228,12 @@ const Sender = () => {
       ERC1155Recepient_ABI,
       provider
     );
-
+    const senderAddress = await signer.getAddress();
     const tokenId = await NFT_Contract.senderTokenInfo(senderAddress);
+    console.log(tokenId);
+
+    /// maybe need to convert the Token ID
+    setTokenId(tokenId);
   };
 
   const createNewChannel = async (recepient, duration) => {
@@ -230,13 +261,16 @@ const Sender = () => {
 
       console.log(tx);
 
-      const newSafeAddress = "0x9B855D0Edb3111891a6A0059273904232c74815D";
+      // const newSafeAddress = "0x9B855D0Edb3111891a6A0059273904232c74815D";
       // send  a conversation to the recpient informing them regarding the channel creation , along with the safeAddress
       await sendMessage(
         `message:Here is our Safe Smart Contract wallet Address for the Channel:${newSafeAddress},safeAddress:${newSafeAddress},totalAmount:${0}`,
         peerAddress
       );
+    } else {
+      console.log("NO SAFE ADDR FOUND");
     }
+    // }
   };
 
   // Need to add the funds before to the Channel
@@ -276,6 +310,19 @@ const Sender = () => {
     );
     await conversation.send(message);
     console.log(conversation);
+  };
+
+  const getChannelId = async (safeAddress) => {
+    const module_contract = new Contract(
+      channelModule_Goerli,
+      Module_ABI,
+      signer
+    );
+
+    const channelId = await module_contract.channelAddressInfos(safeAddress);
+
+    // maybe need to convert the Hex format to uint
+    console.log(channelId);
   };
 
   const payRecepientViaChannel = async () => {
