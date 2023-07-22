@@ -46,7 +46,7 @@ const Sender = () => {
     clientRef,
     peerAddress,
     setPeerAddress,
-    xmtp_client
+    xmtp_client,
   } = useAuth();
 
   const {
@@ -64,38 +64,12 @@ const Sender = () => {
     }
   }, [provider]);
 
-  useEffect(() => {
-    loadConversations();
-  }, [xmtp_client]);
-
-  const loadConversations = async () => {
-    const allConversations = await xmtp_client.conversations.list();
-    for (const conversation of allConversations) {
-      const messagesInConversation = await conversation.messages();
-      setIncomingMessages(messagesInConversation);
-      console.log(messagesInConversation);
-    }
-    const messageLength = await incomingMessages.length;
-    const lastmessage = incomingMessages[messageLength - 1].content
-    console.log(lastmessage)
-  };
-
-  function split(){
-    const text = ""
-    const partial = text.split(",")
-    const partialmessage = partial[1].split(":")
-    const safeAddressFromXmtp = partialmessage[1]
-    const partialamount = partial[2].split(":")
-    const owedAmountByXmtp = partialamount[1]
-    console.log(safeAddressFromXmtp)
-    console.log(owedAmountByXmtp)
-  }
-
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [safeSetupComplete, setsafeSetupComplete] = useState(false);
   const [isLoading, setisLoading] = useState(false);
   const [channelDuration, setChannelDuration] = useState("");
   const [incomingMessages, setIncomingMessages] = useState();
+  const [payAmount, setPayAmount] = useState();
 
   const router = useRouter();
 
@@ -259,7 +233,7 @@ const Sender = () => {
       const newSafeAddress = "0x9B855D0Edb3111891a6A0059273904232c74815D";
       // send  a conversation to the recpient informing them regarding the channel creation , along with the safeAddress
       await sendMessage(
-        `message:Here is our Safe Smart Contract wallet Address for the Channel:${newSafeAddress},safeAddress:${newSafeAddress},totalOwedAmount:${0}`,
+        `message:Here is our Safe Smart Contract wallet Address for the Channel:${newSafeAddress},safeAddress:${newSafeAddress},totalAmount:${0}`,
         peerAddress
       );
     }
@@ -316,7 +290,7 @@ const Sender = () => {
     const senderAdd = await signer.getAddress();
     console.log(senderAdd);
     // const {senderAdd, receiverAdd, transAmount, safeAdd, channelID, totalAmount} = {senderAdd : "0x9B855D0Edb3111891a6A0059273904232c74815D",receiverAdd :"0x72D7968514E5e6659CeBB5CABa7E02CFf8eda389",safeAdd : "0x898d0DBd5850e086E6C09D2c83A26Bb5F1ff8C33",transAmount : 12, channelID : 20, totalAmount : 30}
-    const { url , uid} = await eas.createOffChainAttestations(
+    const { url, uid } = await eas.createOffChainAttestations(
       senderAdd,
       receiverAdd,
       transAmount,
@@ -326,19 +300,21 @@ const Sender = () => {
     );
 
     const conversation = await xmtp_client.conversations.newConversation(
-        "0x9B855D0Edb3111891a6A0059273904232c74815D"
+      "0x9B855D0Edb3111891a6A0059273904232c74815D"
     );
-    const messages =  await conversation.messages();
-    console.log(messages)
+    const messages = await conversation.messages();
+    console.log(messages);
 
-    const partial = lastmessage.split(",")
-    const partialmessage = partial[1].split(":")
-    const safeAddressFromXmtp = partialmessage[1]
-    const partialamount = partial[2].split(":")
-    const owedAmountByXmtp = partialamount[1]
+    const partial = messages.split(",");
+    const partialmessage = partial[1].split(":");
+    const safeAddressFromXmtp = partialmessage[1];
+    const partialamount = partial[2].split(":");
+    const owedAmountByXmtp = partialamount[1];
 
     /// send an XMTP message along with signature itself
-    await sendMessage(`message:${safeAddressFromXmtp},safeadd:${safeAddressFromXmtp},easurl:${url},easuid:${uid},signature:${signature},totalAmount:`);
+    await sendMessage(
+      `message:${safeAddressFromXmtp},safeadd:${safeAddressFromXmtp},totalAmount:${totalAmount},easurl:${url},easuid:${uid},signature:${signature},currentAmount:${payAmount}`
+    );
   };
 
   const generateSignMessage = (safeAddress, totalAmount) => {
@@ -420,8 +396,23 @@ const Sender = () => {
                 </div>
               </div>
               <div className="w-1/2 flex flex-col justify-end border border-indigo-500 ml-5 mt-5 rounded-xl">
-                <div className="flex justify-center mx-auto text-center py-2">
-                  <button onClick={payRecepientViaChannel}>pay</button>
+                <div className="flex flex-col mx-auto py-2 mt-3">
+                    <div className="mx-3 flex flex-col justify-start">
+                        <p className="text-indigo-500 text-xl font-semibold">Receiver's Address</p>
+                        <p className="mt-3 font-semibold">0x9B855D0Edb3111891a6A0059273904232c74815D</p>
+                    </div>
+                    <div className="mx-3 flex flex-col justify-start mt-3">
+                        <p className="text-indigo-500 text-xl font-semibold">Total Amount Owed</p>
+                        <p className="mt-3 font-semibold">0x9B855D0Edb3111891a6A0059273904232c74815D</p>
+                    </div>
+                    <div className="mx-3 flex flex-col justify-start mt-3">
+                        <p className="text-indigo-500 text-xl font-semibold">EAS URL</p>
+                        <p className="mt-3 font-semibold">0x9B855D0Edb3111891a6A0059273904232c74815D</p>
+                    </div>
+                    <div className="mx-3 flex flex-col justify-start mt-3">
+                        <p className="text-indigo-500 text-xl font-semibold">EAS UID</p>
+                        <p className="mt-3 font-semibold">0x9B855D0Edb3111891a6A0059273904232c74815D</p>
+                    </div>
                 </div>
               </div>
             </div>

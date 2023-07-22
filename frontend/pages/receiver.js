@@ -39,18 +39,14 @@ const Receiver = () => {
     );
     const messages =  await conversation.messages();
     console.log(messages)
-  };
-
-  function split(){
-    const text = ""
-    const partial = text.split(",")
+    const partial = messages.split(",")
     const partialmessage = partial[1].split(":")
     const safeAddressFromXmtp = partialmessage[1]
     const partialamount = partial[2].split(":")
     const owedAmountByXmtp = partialamount[1]
     console.log(safeAddressFromXmtp)
     console.log(owedAmountByXmtp)
-  }
+  };
 
   const verifySignatures = async (safeAddress, amount, sig, senderAddress) => {
     const msg = encodePacked(["address", "uint256"], [safeAddress, amount]);
