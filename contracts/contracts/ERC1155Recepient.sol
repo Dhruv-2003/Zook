@@ -18,7 +18,7 @@ contract ERC1155Recepient is
     /**
      * @dev Intialise the Educator Badge NFT Collections
      *
-     * @param token0URI  token URI of the Basic Educator badge id-0
+     * @param _moduleManager Address of the module manager
      */
     constructor(address _moduleManager) ERC1155("") {
         moduleManager = _moduleManager;
@@ -34,6 +34,7 @@ contract ERC1155Recepient is
 
     function setManager(address _newManager) public onlyOwner {
         moduleManager = _newManager;
+        _;
     }
 
     /**

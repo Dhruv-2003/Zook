@@ -1,0 +1,1 @@
+export const ERC115Recepient = "0x2B74083B670009fA63e7CceC16A0400cc202f7c8";

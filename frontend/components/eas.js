@@ -6,6 +6,9 @@ import {
 } from "@ethereum-attestation-service/eas-sdk";
 import { ethers } from "ethers";
 
+// https://sepolia.easscan.org/schema/view/0x90d11fc17e957469d3d5a752c60d71f98a8ff98a153ff3e45025716cbd90d340
+// https://sepolia.easscan.org/schema/view/0x076572d761919907fcc038a3ecc3669818b59fe4408f55d476a2952b684891f8
+
 // NOTE : We will be using Attestations for proving that there was the said transfer of the particular funds between those parties , inside the created channel
 // The proof can be directly posted in form of the actual transaction details , like the sender , reciever , amount ,etc. we want to prove it for
 // Or We could create some sort of ZK proofs which will be responsible for proving that the said address did some tx , without actually revealing all of the details , privacy scaling
@@ -16,9 +19,9 @@ const EASVersion = 0.26;
 const CHAINID = 11155111;
 
 const SchemaUID =
-  "0x90d11fc17e957469d3d5a752c60d71f98a8ff98a153ff3e45025716cbd90d340";
+  "0x076572d761919907fcc038a3ecc3669818b59fe4408f55d476a2952b684891f8";
 const rawSchema =
-  "address Sender,address Reciever,uint128 TxAmount,address SafeChannel ,uint16 ChannelID,uint128 TotalOwed";
+  "address Sender,address Reciever,uint256 TxAmount,address SafeChannel,uint32 ChannelID,uint256 TotalOwed";
 
 const EAS_CONFIG = {
   address: EASContractAddress,
@@ -78,10 +81,10 @@ class EASService {
     const encodedData = schemaEncoder.encodeData([
       { name: "Sender", value: sender, type: "address" },
       { name: "Reciever", value: receiver, type: "address" },
-      { name: "TxAmount", value: txAmount, type: "uint128" },
+      { name: "TxAmount", value: txAmount, type: "uint256" },
       { name: "SafeChannel", value: safeAddress, type: "address" },
       { name: "ChannelID", value: channelId, type: "uint16" },
-      { name: "TotalOwed", value: totalOwed, type: "uint128" },
+      { name: "TotalOwed", value: totalOwed, type: "uint256" },
     ]); // the value of the encoded data can be chosen by the inputs we want it to be
 
     const address = await this.signer.getAddress();
@@ -116,10 +119,10 @@ class EASService {
     const encodedData = schemaEncoder.encodeData([
       { name: "Sender", value: sender, type: "address" },
       { name: "Reciever", value: receiver, type: "address" },
-      { name: "TxAmount", value: txAmount, type: "uint128" },
+      { name: "TxAmount", value: txAmount, type: "uint256" },
       { name: "SafeChannel", value: safeAddress, type: "address" },
       { name: "ChannelID", value: channelId, type: "uint16" },
-      { name: "TotalOwed", value: totalOwed, type: "uint128" },
+      { name: "TotalOwed", value: totalOwed, type: "uint256" },
     ]);
 
     const offchainAttestation = await offchain.signOffchainAttestation(
