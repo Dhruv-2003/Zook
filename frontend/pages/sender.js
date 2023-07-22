@@ -45,7 +45,7 @@ const Sender = () => {
     setSafeAddress,
     clientRef,
     peerAddress,
-    setPeerAddress
+    setPeerAddress,
   } = useAuth();
 
   const {
@@ -60,6 +60,7 @@ const Sender = () => {
   useEffect(() => {
     if (provider) {
       setIsLoggedIn(true);
+      getUserTokenId();
     }
   }, [provider]);
 
@@ -67,6 +68,7 @@ const Sender = () => {
   const [safeSetupComplete, setsafeSetupComplete] = useState(false);
   const [isLoading, setisLoading] = useState(false);
   const [channelDuration, setChannelDuration] = useState("");
+  const [tokenId, setTokenId] = useState();
 
   const router = useRouter();
 
@@ -124,8 +126,13 @@ const Sender = () => {
       };
       console.log(safeAccountConfig);
       // / Will it have gas fees to deploy this safe tx
-      const nonce = await provider.getTransactionCount(await signer.getAddress())
-      const safeSdk = await safeFactory.deploySafe({ safeAccountConfig , saltNonce: nonce});
+      const nonce = await provider.getTransactionCount(
+        await signer.getAddress()
+      );
+      const safeSdk = await safeFactory.deploySafe({
+        safeAccountConfig,
+        saltNonce: nonce,
+      });
 
       console.log("Creating and deploying the new safe");
 
@@ -143,7 +150,6 @@ const Sender = () => {
       setSafeAddress(newSafeAddress);
 
       await enableModule(safeSdk);
-      
 
       setisLoading(false);
       console.log(`created account : ${newSafeAddress}`);
@@ -194,40 +200,49 @@ const Sender = () => {
       ERC1155Recepient_ABI,
       provider
     );
-
+    const senderAddress = await signer.getAddress();
     const tokenId = await NFT_Contract.senderTokenInfo(senderAddress);
+    console.log(tokenId);
+
+    /// maybe need to convert the Token ID
+    setTokenId(tokenId);
   };
 
   const createNewChannel = async (recepient, duration) => {
     // creates a New Safe for this wallet , Channel specific
     // enable Module
-    // const newSafeAddress =  await createSafeWallet();
-    // console.log(newSafeAddress)
+    const newSafeAddress = await createSafeWallet();
+    console.log(newSafeAddress);
 
-    // if(newSafeAddress){
-    //        // Add record in the module
-    // const module_contract = new Contract(
-    //     channelModule_Goerli,
-    //     Module_ABI,
-    //     signer
-    //   );
-  
-    //   const tx = await module_contract.createChannel(
-    //     newSafeAddress,
-    //     peerAddress,
-    //     channelDuration,
-    //     tokenId
-    //   );
-  
-    //   await tx.wait();
-  
-    //   console.log(tx); 
+    if (newSafeAddress) {
+      // Add record in the module
+      const module_contract = new Contract(
+        channelModule_Goerli,
+        Module_ABI,
+        signer
+      );
 
-    const newSafeAddress = "0x9B855D0Edb3111891a6A0059273904232c74815D"
+      const tx = await module_contract.createChannel(
+        newSafeAddress,
+        peerAddress,
+        channelDuration,
+        tokenId
+      );
+
+      await tx.wait();
+
+      console.log(tx);
+
+      // const newSafeAddress = "0x9B855D0Edb3111891a6A0059273904232c74815D";
       // send  a conversation to the recpient informing them regarding the channel creation , along with the safeAddress
-      await sendMessage(`message:Here is our Safe Smart Contract wallet Address for the Channel:${newSafeAddress},safeAddress:${newSafeAddress},totalOwedAmount:${0}`,peerAddress)
+      await sendMessage(
+        `message:Here is our Safe Smart Contract wallet Address for the Channel:${newSafeAddress},safeAddress:${newSafeAddress},totalOwedAmount:${0}`,
+        peerAddress
+      );
+    } else {
+      console.log("NO SAFE ADDR FOUND");
+    }
     // }
-
   };
 
   // Need to add the funds before to the Channel
@@ -269,6 +284,19 @@ const Sender = () => {
     console.log(conversation);
   };
 
+  const getChannelId = async (safeAddress) => {
+    const module_contract = new Contract(
+      channelModule_Goerli,
+      Module_ABI,
+      signer
+    );
+
+    const channelId = await module_contract.channelAddressInfos(safeAddress);
+
+    // maybe need to convert the Hex format to uint
+    console.log(channelId);
+  };
+
   const payRecepientViaChannel = async () => {
     /// generate the Message to be signed
     const msg = generateSignMessage(safeAddress, totalAmount);
@@ -278,9 +306,8 @@ const Sender = () => {
 
     /// create an attestation
 
-
     /// send an XMTP message along with signature itself
-    await sendMessage()
+    await sendMessage();
   };
 
   const generateSignMessage = (safeAddress, totalAmount) => {
@@ -341,7 +368,9 @@ const Sender = () => {
                     <Button colorScheme="red" mr={3} onClick={onClose1}>
                       Cancel
                     </Button>
-                    <Button onClick={createNewChannel} colorScheme="blue">Create</Button>
+                    <Button onClick={createNewChannel} colorScheme="blue">
+                      Create
+                    </Button>
                   </ModalFooter>
                 </ModalContent>
               </Modal>
@@ -360,8 +389,7 @@ const Sender = () => {
                 </div>
               </div>
               <div className="w-1/2 flex flex-col justify-end border border-indigo-500 ml-5 mt-5 rounded-xl">
-                <div className="flex justify-center mx-auto text-center py-2">
-                </div>
+                <div className="flex justify-center mx-auto text-center py-2"></div>
               </div>
             </div>
           </div>
