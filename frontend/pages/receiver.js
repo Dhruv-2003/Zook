@@ -3,8 +3,7 @@ import { Divider } from "@chakra-ui/react";
 import { useAuth } from "../auth-context/auth";
 
 const Receiver = () => {
-  const { xmtp_client } = useAuth();
-  const PEER_ADDRESS = "0x9B855D0Edb3111891a6A0059273904232c74815D";
+  const { xmtp_client, peerAddress } = useAuth();;
   const [isOnNetwork, setIsOnNetwork] = useState(false);
   const [incomingMessages, setIncomingMessages] = useState();
   const [receipt, setReceipt] = useState();
@@ -17,16 +16,25 @@ const Receiver = () => {
   const loadConversations = async () => {
     const allConversations = await xmtp_client.conversations.list();
     for (const conversation of allConversations) {
-      // const conversations = JSON.stringify(conversation.context?.metadata)
       const messagesInConversation = await conversation.messages();
       setIncomingMessages(messagesInConversation);
       console.log(messagesInConversation);
-      //   const messageLength = await messagesInConversation.length();
-      //   const lastmessage = messagesInConversation[messageLength - 1];
-      //   setReceipt(receiptForReceiver);
-      //   console.log(lastmessage);
     }
+    const messageLength = await incomingMessages.length;
+    const lastmessage = incomingMessages[messageLength - 1].content
+    console.log(lastmessage)
   };
+
+  function split(){
+    const text = ""
+    const partial = text.split(",")
+    const partialmessage = partial[0].split(":")
+    const safeAddressFromXmtp = partialmessage[2]
+    const partialamount = partial[2].split(":")
+    const owedAmountByXmtp = partialamount[1]
+    console.log(safeAddressFromXmtp)
+    console.log(owedAmountByXmtp)
+  }
 
   return (
     <div className="w-screen">
