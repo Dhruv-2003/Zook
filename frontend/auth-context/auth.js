@@ -1,9 +1,10 @@
 import React, { createContext } from "react";
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState, useEffect , useRef} from "react";
 import { ethers } from "ethers";
 import { getUserSafe } from "../components/safemethods";
 import { EthersAdapter } from "@safe-global/protocol-kit";
 import Safe from "@safe-global/protocol-kit";
+import { Client } from "@xmtp/xmtp-js";
 
 const AuthContext = createContext();
 
@@ -16,6 +17,9 @@ export function AuthProvider({ children }) {
   const [signer, setSigner] = useState();
   const [safeSdk, setSafeSDK] = useState();
   const [safeAddress, setSafeAddress] = useState();
+  const [xmtp_client, setxmtp_client] = useState(null)
+  const convRef = useRef(null);
+  const clientRef = useRef(null);
 
   useEffect(() => {
     if (!provider) {
@@ -51,6 +55,10 @@ export function AuthProvider({ children }) {
     setSafeSDK,
     safeAddress,
     setSafeAddress,
+    xmtp_client,
+    setxmtp_client,
+    convRef,
+    clientRef
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
