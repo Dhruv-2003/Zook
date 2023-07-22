@@ -11,65 +11,59 @@ const Notifications = () => {
   const [isOnNetwork, setIsOnNetwork] = useState(false);
 
   const loadMessages = async () => {
-    const messages = await convRef.messages(); 
+    const messages = await convRef.messages();
     setMessages(messages);
     console.log(messages);
-  }
+  };
 
-  const sendMessage = async(message) => {
+  const sendMessage = async (message) => {
     await convRef.send(message);
-  }
-
-//   const newConversation = async function (xmtp_client, addressTo) {
-//     //Creates a new conversation with the address
-//     if (await xmtp_client?.canMessage(PEER_ADDRESS)) {
-//       const conversation = await xmtp_client.conversations.newConversation(
-//         addressTo,
-//       );
-//       convRef.current = conversation;
-//       //Loads the messages of the conversation
-//       const messages = await conversation.messages();
-      
-//       await conversation.send("hello");
-//       setMessages(messages);
-//       console.log(messages)
-//     } else {
-//       console.log("cant message because is not on the network.");
-//       //cant message because is not on the network.
-//     }
-//   };
+  };
 
   const initXmtp = async function () {
     // Request access to the user's Ethereum accounts
-    await window.ethereum.enable();
+    try {
+      await window.ethereum.enable();
 
-    // Instantiate a new ethers provider with Metamask
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
+      // Instantiate a new ethers provider with Metamask
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
 
-    // Get the signer from the ethers provider
-    const signer = provider.getSigner();
+      // Get the signer from the ethers provider
+      const signer = provider.getSigner();
 
-    // Create the XMTP client
-    const xmtp = await Client.create(signer, { env: "production" });
-    //Create or load conversation with Gm bot
-    if (await xmtp?.canMessage(PEER_ADDRESS)) {
+      // Create the XMTP client
+      const xmtp = await Client.create(signer, { env: "production" });
+      //Create or load conversation with Gm bot
+      if (await xmtp?.canMessage(PEER_ADDRESS)) {
         const conversation = await xmtp.conversations.newConversation(
-          addressTo,
+          addressTo
         );
         convRef.current = conversation;
       } else {
         console.log("cant message because is not on the network.");
         //cant message because is not on the network.
       }
-    // Set the XMTP client in state for later use
-    setIsOnNetwork(!!xmtp.address);
-    //Set the client in the ref
-    clientRef.current = xmtp;
+      // Set the XMTP client in state for later use
+      setIsOnNetwork(!!xmtp.address);
+      //Set the client in the ref
+      clientRef.current = xmtp;
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
     <div>
-      <button onClick={initXmtp}>Connect to XMTP</button>
+      {isOnNetwork != false ? (
+        <div>hello</div>
+      ) : (
+        <button
+          onClick={initXmtp}
+          className="bg-blue-500 text-500 px-3 py-2 rounded-xl font-semibold text-white"
+        >
+          Connect to XMTP
+        </button>
+      )}
     </div>
   );
 };
