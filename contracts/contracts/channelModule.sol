@@ -30,8 +30,8 @@ contract ChannelModule {
     struct ChannelData {
         address sender;
         address safeAddress;
-        address[] recepients; // All the recepients for the channel
-        // duration
+        address recepient; // Recepient for the Channel
+        uint expiration;
         uint tokenId; // ERC1155 NFT for Recepient Proof
         bool isInitialised;
     }
@@ -58,39 +58,37 @@ contract ChannelModule {
     // add the recepient to the Array
     function createChannel(
         address safe,
-        address initialRecep,
-        uint duration
+        address recepient,
+        uint duration,
+        uint tokenId
     ) public returns (uint channelId) {
+        require(channelAddressInfos[safe] == 0, "CHANNEL ALREADY CREATED");
         channelId = totalChannels;
-        // token ID  ==  channel ID , so all these NFT Holders gets access to the safe Module functions
-        ChannelData memory _channelData = new ChannelData(
+        ChannelData memory _channelData = ChannelData(
             msg.sender,
             safe,
-            [initialRecep],
-            channelId,
+            recepient,
+            block.timestamp + duration,
+            tokenId,
             true
         );
 
-        uint tokenId = channelId;
-        recepientNFT.mintRecepientNFT(initialRecep, tokenId);
+        recepientNFT.mintRecepientNFT(recepient, tokenId);
 
         channelInfos[channelId] = _channelData;
         channelAddressInfos[safe] = channelId;
+
+        totalChannels += 1;
     }
 
-    // Add an extra recepeint if needed
-    function addRecepient(
+    function extendChannelDuration(
         uint channelId,
-        address newRecep,
-        uint duration
-    ) public onlyInititalised(channelId) {
+        uint256 newExpiration
+    ) public {
         ChannelData memory _channelData = channelInfos[channelId];
-        require(
-            recepientNFT.balanceOf(newRecep, _channelData.tokenId) < 1,
-            "ALREADY A RECEPIENT"
-        );
-        _channelData.recepients.push(newRecep);
-        recepientNFT.mintRecepientNFT(newRecep, _channelData.tokenId);
+        require(msg.sender == _channelData.sender, "ONLY OWNER");
+        require(newExpiration > _channelData.expiration);
+        _channelData.expiration = newExpiration;
 
         channelInfos[channelId] = _channelData;
     }
@@ -100,9 +98,11 @@ contract ChannelModule {
         uint channelId,
         bytes32 _hash,
         bytes memory signature,
-        uint amount
+        uint96 amount
     ) public {
         ChannelData memory _channelData = channelInfos[channelId];
+
+        // Use sismo here directly to show if the recepient is the msg.sender or not , and generate the ZK proof , to be verified here
         require(
             recepientNFT.balanceOf(msg.sender, _channelData.tokenId) > 0,
             "NOT A RECEPIENT"
@@ -110,7 +110,7 @@ contract ChannelModule {
 
         // verify if the signature is valid or not
         // verifying if the Sender is actually the signer
-        require(isValidSignature(_hash, signature));
+        require(isValidSignature(_hash, signature, _channelData.sender));
 
         // parse inputs from the hash for checking the proofs on chain
 
@@ -120,8 +120,45 @@ contract ChannelModule {
 
         address token = address(0); // will be hardhcoded
 
-        // send the funds from the Safe to the User
-        transfer(_channelData.safeAddress, token, msg.sender, amount);
+        // send the funds from the Safe to the Recepeint
+        transfer(
+            GnosisSafe(_channelData.safeAddress),
+            token,
+            payable(msg.sender),
+            amount
+        );
+
+        // Dispense the remaining to the Sender back
+        uint96 remainingAmount = uint96(
+            address(_channelData.safeAddress).balance
+        );
+        transfer(
+            GnosisSafe(_channelData.safeAddress),
+            token,
+            payable(_channelData.sender),
+            remainingAmount
+        );
+    }
+
+    // close channel by sender in case they want to after the duration completed
+    function executeCloseChannel(uint channelId) public {
+        ChannelData memory _channelData = channelInfos[channelId];
+        require(
+            block.timestamp >= _channelData.expiration,
+            "CHANNEL NOT EXPIRED"
+        );
+
+        address token = address(0);
+
+        uint96 remainingAmount = uint96(
+            address(_channelData.safeAddress).balance
+        );
+        transfer(
+            GnosisSafe(_channelData.safeAddress),
+            token,
+            payable(_channelData.sender),
+            remainingAmount
+        );
     }
 
     function transfer(
@@ -133,7 +170,12 @@ contract ChannelModule {
         if (token == address(0)) {
             // solium-disable-next-line security/no-send
             require(
-                safe.execTransactionFromModule(to, amount, "", Operation.Call),
+                safe.execTransactionFromModule(
+                    to,
+                    amount,
+                    "",
+                    GnosisSafe.Operation.Call
+                ),
                 "Could not execute ether transfer"
             );
         } else {
@@ -143,31 +185,21 @@ contract ChannelModule {
                 amount
             );
             require(
-                safe.execTransactionFromModule(token, 0, data, Operation.Call),
+                safe.execTransactionFromModule(
+                    token,
+                    0,
+                    data,
+                    GnosisSafe.Operation.Call
+                ),
                 "Could not execute token transfer"
             );
         }
     }
 
-    // close channel by sender in case they want to after the duration completed
-    function executeCloseChannel() public {}
-
-    // function extendChannel(uint256 newExpiration) public {
-    //     require(msg.sender == sender);
-    //     require(newExpiration > expiration);
-    //     expiration = newExpiration;
-    // }
-
-    // // If the timeout is reached without the recipient closing the channel, then
-    // // the ether is released back to the sender.
-    // function claimTimeout() public {
-    //     require(block.timestamp >= expiration);
-    //     selfdestruct(payable(sender));
-    // }
-
     function isValidSignature(
         bytes32 hash,
-        bytes memory signature
+        bytes memory signature,
+        address sender
     ) public view returns (bool) {
         // Check that the signature is from the payment sender.
         return recoverSigner(hash, signature) == sender;

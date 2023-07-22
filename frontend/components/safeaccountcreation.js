@@ -102,7 +102,7 @@ const SafeAccountCreation = () => {
       setSafeSDK(safeSdk);
       setSafeAddress(newSafeAddress);
 
-      enableModule(safeSdk, newSafeAddress);
+      // enableModule(safeSdk, newSafeAddress);
 
       /// On Continue, direct to the home page
       setisLoading(false);
@@ -113,19 +113,39 @@ const SafeAccountCreation = () => {
   };
 
   const enableModule = async () => {
-    const moduleAddress = "0x2B74083B670009fA63e7CceC16A0400cc202f7c8";
-    const safeTransaction = await safeSdk.createEnableModuleTx(moduleAddress);
-    const txResponse = await safeSdk.executeTransaction(safeTransaction);
-    await txResponse.transactionResponse?.wait();
+    // createSafeWallet();
+    console.log(safeSdk);
+    const moduleAddress = "0xE16A91E4f873DeeAfA675AAE592961ceafA5E44B";
+    const isEnabled = await safeSdk.isModuleEnabled(moduleAddress);
 
-    console.log(txResponse);
-    return txResponse;
+    if (!isEnabled) {
+      const safeTransaction = await safeSdk.createEnableModuleTx(moduleAddress);
+      const txResponse = await safeSdk.executeTransaction(safeTransaction);
+      await txResponse.transactionResponse?.wait();
+
+      console.log(txResponse);
+      return txResponse;
+    } else {
+      console.log("Module Already Enabled");
+    }
   };
 
   return (
     <div>
       {/* <button onClick={login}>login</button> */}
-      <button className="bg-blue-500 text-500 px-3 py-2 rounded-xl font-semibold text-white" onClick={createSafeWallet}>Create Safe</button>
+      <button
+        className="bg-blue-500 text-500 px-3 py-2 rounded-xl font-semibold text-white"
+        onClick={createSafeWallet}
+      >
+        Create Safe
+      </button>
+      <button
+        className="bg-blue-500 text-500 px-3 py-2 rounded-xl font-semibold text-white"
+        onClick={enableModule}
+      >
+        Enable Module
+      </button>
+
       {/* <button onClick={getUserSafe}>get</button> */}
     </div>
   );

@@ -21,7 +21,7 @@ import {
   Button,
 } from "@chakra-ui/react";
 import Chat from "../components/chat";
-import { ethers } from "ethers";
+import { Contract, ethers } from "ethers";
 import { useAuth } from "../auth-context/auth";
 import { getUserSafe } from "../components/safemethods";
 import { EthersAdapter } from "@safe-global/protocol-kit";
@@ -90,6 +90,10 @@ const Sender = () => {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const createNewChannel = () => {
+    const contract = new Contract(Module);
   };
 
   return (

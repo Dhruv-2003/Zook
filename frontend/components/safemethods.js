@@ -36,7 +36,7 @@ export const getUserSafe = async () => {
 };
 
 export const enableModule = async () => {
-  const moduleAddress = "0x2B74083B670009fA63e7CceC16A0400cc202f7c8";
+  const moduleAddress = "0xb0cd97B63643388f1600E88EAFfC883E6F7564CC";
   try {
     const safeTransaction = await safeSdk.createEnableModuleTx(moduleAddress);
     const txResponse = await safeSdk.executeTransaction(safeTransaction);
@@ -47,4 +47,22 @@ export const enableModule = async () => {
   } catch (error) {
     console.log(error);
   }
+};
+
+export const enableGuard = async () => {
+  const guardAddress = "0xb0cd97B63643388f1600E88EAFfC883E6F7564CC";
+  try {
+    const safeTransaction = await safeSdk.createEnableGuardTx(guardAddress);
+    const txResponse = await safeSdk.executeTransaction(safeTransaction);
+    await txResponse.transactionResponse?.wait();
+
+    console.log(txResponse);
+    return txResponse;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const isModuleEnabled = async (safeAddress, module) => {
+  const res = await safe.isModuleEnabled(moduleAddress);
 };
