@@ -1,33 +1,33 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Divider } from "@chakra-ui/react";
-import {
-  Drawer,
-  DrawerBody,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerOverlay,
-  DrawerContent,
-  DrawerCloseButton,
-} from "@chakra-ui/react";
-import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  useDisclosure,
-  Button,
-} from "@chakra-ui/react";
+import { useAuth } from "../auth-context/auth";
 
 const Receiver = () => {
-  const {
-    isOpen: isOpen2,
-    onOpen: onOpen2,
-    onClose: onClose2,
-  } = useDisclosure();
-  const btnRef = React.useRef();
+  const { xmtp_client } = useAuth();
+  const PEER_ADDRESS = "0x9B855D0Edb3111891a6A0059273904232c74815D";
+  const [isOnNetwork, setIsOnNetwork] = useState(false);
+  const [incomingMessages, setIncomingMessages] = useState();
+  const [receipt, setReceipt] = useState();
+  const [showmore, setShowMore] = useState(false);
+
+  useEffect(() => {
+    loadConversations();
+  }, [xmtp_client]);
+
+  const loadConversations = async () => {
+    const allConversations = await xmtp_client.conversations.list();
+    for (const conversation of allConversations) {
+      // const conversations = JSON.stringify(conversation.context?.metadata)
+      const messagesInConversation = await conversation.messages();
+      setIncomingMessages(messagesInConversation);
+      console.log(messagesInConversation);
+      //   const messageLength = await messagesInConversation.length();
+      //   const lastmessage = messagesInConversation[messageLength - 1];
+      //   setReceipt(receiptForReceiver);
+      //   console.log(lastmessage);
+    }
+  };
+
   return (
     <div className="w-screen">
       <div className="flex flex-col w-2/3 justify-center mx-auto mt-20">
@@ -36,56 +36,51 @@ const Receiver = () => {
             <div>
               <p className="text-xl text-indigo-500 font-semibold">Channels</p>
             </div>
-            <div>
-            </div>
+            <div></div>
           </div>
           <div className="mt-5">
             <Divider />
           </div>
-          <div className="w-2/3 flex flex-col justify-center mx-auto">
-            <div
-              ref={btnRef}
-              onClick={onOpen2}
-              className="w-full border border-indigo-500 rounded-xl px-5 py-2 cursor-pointer mt-5"
-            >
-              <p className="text-black font-semibold justify-center text-center">
-                0x72D7968514E5e6659CeBB5CABa7E02CFf8eda389
-              </p>
+          <div className="w-full flex mx-auto">
+            <div className="w-1/2 flex flex-col justify-start mr-5">
+              <div className="w-full border-b border-gray-300  px-5 py-3 cursor-pointer mt-5">
+                <p className="text-black font-semibold justify-center text-center">
+                  0x72D7968514E5e6659CeBB5CABa7E02CFf8eda389
+                </p>
+              </div>
+              <div className="mt-5 flex flex-col justify-center">
+                <button
+                  onClick={() => setShowMore(true)}
+                  className="border border-indigo-500 text-indigo-500 bg-white px-7 py-2 rounded-xl"
+                >
+                  Show All Transactions
+                </button>
+                <div className="mt-3">
+                  {showmore ? (
+                    <div className="w-full flex justify-end border border-indigo-500 rounded-xl">
+                      <div className="flex flex-col justify-center mx-auto text-center py-2">
+                        {incomingMessages &&
+                          incomingMessages.map((message) => {
+                            return (
+                              <p className="text-lg text-black font-semibold mt-2">
+                                {message.content}
+                              </p>
+                            );
+                          })}
+                      </div>
+                    </div>
+                  ) : (
+                    <div></div>
+                  )}
+                </div>
+              </div>
             </div>
-            <Drawer
-              isOpen={isOpen2}
-              placement="right"
-              onClose={onClose2}
-              finalFocusRef={btnRef}
-            >
-              <DrawerOverlay />
-              <DrawerContent>
-                <DrawerCloseButton />
-                <DrawerHeader>Channel Details</DrawerHeader>
-
-                <DrawerBody></DrawerBody>
-
-                <DrawerFooter>
-                  <Button
-                    variant="outline"
-                    mr={3}
-                    onClick={onClose2}
-                    colorScheme="red"
-                  >
-                    Close
-                  </Button>
-                  <Button
-                    variant="outline"
-                    mr={3}
-                    colorScheme="blue"
-                  >
-                    Withdraw
-                  </Button>
-                </DrawerFooter>
-              </DrawerContent>
-            </Drawer>
+            <div className="w-1/2 flex flex-col justify-end border border-indigo-500 ml-5 mt-5 rounded-xl">
+              <div className="flex justify-center mx-auto text-center py-2"></div>
+            </div>
           </div>
         </div>
+        <div></div>
       </div>
     </div>
   );
