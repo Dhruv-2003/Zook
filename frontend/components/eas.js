@@ -18,7 +18,7 @@ import { ethers } from "ethers";
 // Choose the attestations on whatever chain you want to
 const EASContractAddress = "0xC2679fBD37d54388Ce493F1DB75320D236e1815e"; // Sepolia v0.26
 const EASVersion = "0.26";
-const CHAINID = 11155111;
+const CHAINID = 1;
 
 const SchemaUID =
   "0x076572d761919907fcc038a3ecc3669818b59fe4408f55d476a2952b684891f8";
@@ -152,13 +152,14 @@ class EASService {
         this.signer
       );
     console.log(signedoffchainAttestation);
-
+    const uid  = signedoffchainAttestation.uid;
     const url = await createOffchainURL({
       sig: signedoffchainAttestation,
       signer: address,
     });
 
     console.log(url);
+    return {url, uid}
 
     // This function will return a signed off-chain attestation object containing the UID, signature, and other relevant information. You can then share this object with the intended recipient or store it for future use.s
   }
