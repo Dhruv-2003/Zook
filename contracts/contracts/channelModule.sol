@@ -20,3 +20,21 @@ interface GnosisSafe {
         Operation operation
     ) external returns (bool success);
 }
+
+contract ChannelModule {
+    // will store some channel infos
+    struct ChannelData {
+        address sender;
+    }
+
+    mapping(uint => ChannelData) public channelInfos;
+
+    // mint a NFT to the Reciever when the channel is started
+    function createChannel() public {}
+
+    // withdraw funds for the Reciever to claim the amount
+    function executeWithdraw() public {}
+
+    // close channel by sender in case they want to after
+    function executeCloseChannel() public {}
+}
