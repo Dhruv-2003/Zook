@@ -14,22 +14,28 @@ const Receiver = () => {
   }, [xmtp_client]);
 
   const loadConversations = async () => {
-    const allConversations = await xmtp_client.conversations.list();
-    for (const conversation of allConversations) {
-      const messagesInConversation = await conversation.messages();
-      setIncomingMessages(messagesInConversation);
-      console.log(messagesInConversation);
-    }
-    const messageLength = await incomingMessages.length;
-    const lastmessage = incomingMessages[messageLength - 1].content
-    console.log(lastmessage)
+    // const allConversations = await xmtp_client.conversations.list();
+    // for (const conversation of allConversations) {
+    //   const messagesInConversation = await conversation.messages();
+    //   setIncomingMessages(messagesInConversation);
+    //   console.log(messagesInConversation);
+    // }
+    // const messageLength = await incomingMessages.length;
+    // const lastmessage = incomingMessages[messageLength - 1].content
+    // console.log(lastmessage)
+
+    const conversation = await xmtp_client.conversations.newConversation(
+        "0x72D7968514E5e6659CeBB5CABa7E02CFf8eda389"
+    );
+    const messages =  await conversation.messages();
+    console.log(messages)
   };
 
   function split(){
     const text = ""
     const partial = text.split(",")
-    const partialmessage = partial[0].split(":")
-    const safeAddressFromXmtp = partialmessage[2]
+    const partialmessage = partial[1].split(":")
+    const safeAddressFromXmtp = partialmessage[1]
     const partialamount = partial[2].split(":")
     const owedAmountByXmtp = partialamount[1]
     console.log(safeAddressFromXmtp)
