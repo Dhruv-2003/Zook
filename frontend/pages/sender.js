@@ -17,6 +17,7 @@ import { getUserSafe } from "../components/safemethods";
 import {
   encodePacked,
   hashMessage,
+  parseEther,
   recoverAddress,
   recoverMessageAddress,
 } from "viem";
@@ -233,7 +234,7 @@ const Sender = () => {
     console.log(tokenId);
 
     /// maybe need to convert the Token ID
-    setTokenId(tokenId);
+    return tokenId;
   };
 
   const createNewChannel = async (recepient, duration) => {
@@ -249,6 +250,8 @@ const Sender = () => {
         Module_ABI,
         signer
       );
+
+      const tokenId = await getUserTokenId();
 
       const tx = await module_contract.createChannel(
         newSafeAddress,
@@ -323,6 +326,7 @@ const Sender = () => {
 
     // maybe need to convert the Hex format to uint
     console.log(channelId);
+    return channelId;
   };
 
   const payRecepientViaChannel = async () => {
@@ -331,20 +335,6 @@ const Sender = () => {
 
     /// sign the Message
     const signature = await walletClient.signMessage(msg);
-
-    // / create an attestation
-    const eas = new EASService(provider, signer);
-    const senderAdd = await signer.getAddress();
-    console.log(senderAdd);
-    // const {senderAdd, receiverAdd, transAmount, safeAdd, channelID, totalAmount} = {senderAdd : "0x9B855D0Edb3111891a6A0059273904232c74815D",receiverAdd :"0x72D7968514E5e6659CeBB5CABa7E02CFf8eda389",safeAdd : "0x898d0DBd5850e086E6C09D2c83A26Bb5F1ff8C33",transAmount : 12, channelID : 20, totalAmount : 30}
-    const { url, uid } = await eas.createOffChainAttestations(
-      senderAdd,
-      receiverAdd,
-      transAmount,
-      safeAdd,
-      channelID,
-      totalAmount
-    );
 
     const conversation = await xmtp_client.conversations.newConversation(
       "0x9B855D0Edb3111891a6A0059273904232c74815D"
@@ -357,6 +347,24 @@ const Sender = () => {
     const safeAddressFromXmtp = partialmessage[1];
     const partialamount = partial[2].split(":");
     const owedAmountByXmtp = partialamount[1];
+
+    // / create an attestation
+    const eas = new EASService(provider, signer);
+    const senderAdd = await signer.getAddress();
+    const channelId = await getChannelId();
+    const transAmount = parseEther(amount);
+    const totalAmount = partialamount + transAmount;
+    console.log(senderAdd);
+
+    // const {senderAdd, receiverAdd, transAmount, safeAdd, channelID, totalAmount} = {senderAdd : "0x9B855D0Edb3111891a6A0059273904232c74815D",receiverAdd :"0x72D7968514E5e6659CeBB5CABa7E02CFf8eda389",safeAdd : "0x898d0DBd5850e086E6C09D2c83A26Bb5F1ff8C33",transAmount : 12, channelID : 20, totalAmount : 30}
+    const { url, uid } = await eas.createOffChainAttestations(
+      senderAdd,
+      receiverAdd,
+      transAmount,
+      safeAddress,
+      channelId,
+      totalAmount
+    );
 
     /// send an XMTP message along with signature itself
     await sendMessage(
