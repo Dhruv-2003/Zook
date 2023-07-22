@@ -6,12 +6,12 @@ import {
 } from "@web3modal/ethereum";
 import { Web3Modal } from "@web3modal/react";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
-import { gnosis, sepolia } from "wagmi/chains";
+import { gnosis, sepolia, goerli } from "wagmi/chains";
 import { AuthProvider } from "../auth-context/auth";
 import { Navbar } from "../components/navbar";
 import { ChakraProvider } from "@chakra-ui/react";
 
-const chains = [gnosis, sepolia];
+const chains = [gnosis, sepolia, goerli];
 const projectId = "e332421b450f94125a7d3b2a85b27e49";
 
 const { publicClient } = configureChains(chains, [w3mProvider({ projectId })]);

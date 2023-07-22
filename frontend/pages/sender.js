@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { Divider } from "@chakra-ui/react";
 import {
   Drawer,
@@ -21,8 +21,14 @@ import {
   Button,
 } from "@chakra-ui/react";
 import Chat from "../components/chat";
+import { ethers } from "ethers";
+import { useAuth } from "../auth-context/auth";
+import { getUserSafe } from "../components/safemethods";
+import { EthersAdapter } from "@safe-global/protocol-kit";
+import Safe from "@safe-global/protocol-kit";
 
 const Sender = () => {
+  const { safeSdk, signer, setSafeSDK, provider } = useAuth();
   const {
     isOpen: isOpen1,
     onOpen: onOpen1,
@@ -34,6 +40,52 @@ const Sender = () => {
     onClose: onClose2,
   } = useDisclosure();
   const btnRef = React.useRef();
+
+  async function getSafe() {
+    if (provider && signer) {
+      const ethAdapter = new EthersAdapter({
+        ethers,
+        signerOrProvider: signer,
+      });
+      const safeAddress = await getUserSafe(signer);
+      console.log(safeAddress);
+      if (safeAddress) {
+        const safeSDK = await Safe.create({ ethAdapter, safeAddress });
+        setSafeSDK(safeSDK);
+        console.log(safeSdk);
+      }
+    }
+  }
+
+  const addFundsToSafe = async () => {
+    try {
+      await getSafe();
+      if (safeSdk) {
+        const safeAddress = await safeSdk.getAddress();
+
+        const safeAmount = ethers.utils
+          .parseUnits("0.001", "ether")
+          .toHexString();
+
+        const transactionParameters = {
+          to: safeAddress,
+          value: safeAmount,
+        };
+
+        const tx = await signer.sendTransaction(transactionParameters);
+
+        console.log("sending funds to safe account.");
+        console.log(
+          `Deposit Transaction: https://goerli.etherscan.io/tx/${tx.hash}`
+        );
+      } else {
+        console.log(safeSdk);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="w-screen">
       <div className="flex flex-col w-2/3 justify-center mx-auto mt-20">
@@ -43,12 +95,20 @@ const Sender = () => {
               <p className="text-xl text-indigo-500 font-semibold">Channels</p>
             </div>
             <div>
-              <button
-                onClick={onOpen1}
-                className="px-7 py-1.5 rounded-xl bg-white text-indigo-500 border border-indigo-500 font-semibold hover:scale-105 duration-200"
-              >
-                Create Channel
-              </button>
+              <div className="flex">
+                <button
+                  onClick={addFundsToSafe}
+                  className="px-7 mx-5 py-1.5 rounded-xl bg-white text-indigo-500 border border-indigo-500 font-semibold hover:scale-105 duration-200"
+                >
+                  Add Funds
+                </button>
+                <button
+                  onClick={onOpen1}
+                  className="px-7 mx-5 py-1.5 rounded-xl bg-white text-indigo-500 border border-indigo-500 font-semibold hover:scale-105 duration-200"
+                >
+                  Create Channel
+                </button>
+              </div>
               <Modal isOpen={isOpen1} onClose={onClose1}>
                 <ModalOverlay />
                 <ModalContent>
@@ -128,7 +188,6 @@ const Sender = () => {
             </Drawer>
           </div>
         </div>
-        <Chat/>
       </div>
     </div>
   );

@@ -1,12 +1,13 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Client } from "@xmtp/xmtp-js";
 import { useAccount } from "wagmi";
 import { ethers } from "ethers";
+import { Web3Button } from "@web3modal/react";
 
 const Notifications = () => {
   const convRef = useRef(null);
   const clientRef = useRef(null);
-  const PEER_ADDRESS = "0x9B855D0Edb3111891a6A0059273904232c74815D";
+  const PEER_ADDRESS = "0x72D7968514E5e6659CeBB5CABa7E02CFf8eda389";
   const [messages, setMessages] = useState(null);
   const [isOnNetwork, setIsOnNetwork] = useState(false);
 
@@ -16,11 +17,17 @@ const Notifications = () => {
     console.log(messages);
   };
 
+  useEffect(() => {
+    if (clientRef) {
+      setIsOnNetwork(true);
+    }
+  }, []);
+
   const sendMessage = async (message) => {
     await convRef.send(message);
   };
 
-  const initXmtp = async function () {
+  const initXmtp = async function (addressTo) {
     // Request access to the user's Ethereum accounts
     try {
       await window.ethereum.enable();
@@ -68,7 +75,9 @@ const Notifications = () => {
   return (
     <div>
       {isOnNetwork != false ? (
-        <div>hello</div>
+        <>
+          <Web3Button />
+        </>
       ) : (
         <button
           onClick={startAConversation}
