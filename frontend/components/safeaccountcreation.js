@@ -19,13 +19,6 @@ const SafeAccountCreation = () => {
     setSafeAddress,
   } = useAuth();
 
-  // useEffect(() => {
-  //   if (!safeAuth) {
-  //     intializeAuthKit();
-  //     console.log("Intializing Auth Kit");
-  //   }
-  // }, []);
-
   useEffect(() => {
     if (provider) {
       setIsLoggedIn(true);
@@ -65,7 +58,7 @@ const SafeAccountCreation = () => {
       });
 
       const safeService = new SafeApiKit({
-        txServiceUrl: "https://safe-transaction-gnosis-chain.safe.global",
+        txServiceUrl: "https://safe-transaction-goerli.safe.global",
         ethAdapter,
       });
 

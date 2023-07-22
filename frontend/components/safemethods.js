@@ -12,7 +12,7 @@ const intializeSafeAPI = () => {
   });
 
   const safeSAPIService = new SafeApiKit({
-    txServiceUrl: "https://safe-transaction-gnosis-chain.safe.global",
+    txServiceUrl: "https://safe-transaction-goerli.safe.global",
     ethAdapter,
   });
 

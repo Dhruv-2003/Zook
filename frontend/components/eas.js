@@ -84,7 +84,7 @@ class EASService {
       { name: "Reciever", value: receiver, type: "address" },
       { name: "TxAmount", value: txAmount, type: "uint256" },
       { name: "SafeChannel", value: safeAddress, type: "address" },
-      { name: "ChannelID", value: channelId, type: "uint16" },
+      { name: "ChannelID", value: channelId, type: "uint32" },
       { name: "TotalOwed", value: totalOwed, type: "uint256" },
     ]); // the value of the encoded data can be chosen by the inputs we want it to be
 
@@ -126,7 +126,7 @@ class EASService {
       { name: "Reciever", value: receiver, type: "address" },
       { name: "TxAmount", value: txAmount, type: "uint256" },
       { name: "SafeChannel", value: safeAddress, type: "address" },
-      { name: "ChannelID", value: channelId, type: "uint16" },
+      { name: "ChannelID", value: channelId, type: "uint32" },
       { name: "TotalOwed", value: totalOwed, type: "uint256" },
     ]);
     console.log(encodedData)

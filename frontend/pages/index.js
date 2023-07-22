@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import { useAuth } from "../auth-context/auth";
 import EASService from "../components/eas";
+import SafeAccountCreation from "../components/safeaccountcreation";
 
 export default function Home() {
   const router = useRouter();
@@ -73,6 +74,7 @@ export default function Home() {
           <div>
             <button onClick={() => createAttestations()}>eas</button>
           </div>
+          <SafeAccountCreation/>
         </div>
       </div>
     </div>
