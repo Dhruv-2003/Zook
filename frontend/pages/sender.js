@@ -26,6 +26,12 @@ import { useAuth } from "../auth-context/auth";
 import { getUserSafe } from "../components/safemethods";
 import { EthersAdapter } from "@safe-global/protocol-kit";
 import Safe from "@safe-global/protocol-kit";
+import {
+  encodePacked,
+  hashMessage,
+  recoverAddress,
+  recoverMessageAddress,
+} from "viem";
 
 const Sender = () => {
   const { safeSdk, signer, setSafeSDK, provider } = useAuth();

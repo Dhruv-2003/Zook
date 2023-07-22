@@ -1,1 +1,3 @@
-export const ERC115Recepient = "0x2B74083B670009fA63e7CceC16A0400cc202f7c8";
+export const ERC1155NFTRecepient = "0x2B74083B670009fA63e7CceC16A0400cc202f7c8";
+
+export const channelModule = "0xb0cd97B63643388f1600E88EAFfC883E6F7564CC";
