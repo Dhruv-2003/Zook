@@ -34,7 +34,7 @@ class EASService {
 
   constructor(provider, signer) {
     this.easClient = new EAS(EASContractAddress);
-    this.offchain = new Offchain(EAS_CONFIG);
+    this.offchain = new Offchain(EAS_CONFIG, 1);
     this.signer = signer;
 
     // Gets a default provider (in production use something else like infura/alchemy)
@@ -127,7 +127,7 @@ class EASService {
       { name: "TotalOwed", value: totalOwed, type: "uint128" },
     ]);
     console.log(encodedData)
-    const offChainClient= new Offchain(EAS_CONFIG);
+    const offChainClient= new Offchain(EAS_CONFIG, 1);
 
     const offchainAttestation = await offChainClient.signOffchainAttestation(
       {
@@ -139,6 +139,7 @@ class EASService {
         revocable: true,
         nonce: 0,
         schema: SchemaUID,
+        version: 1, 
         refUID:
           "0x0000000000000000000000000000000000000000000000000000000000000000",
         data: encodedData,
