@@ -80,8 +80,19 @@ const Sender = () => {
     const messageLength = await incomingMessages.length;
     const lastmessage = incomingMessages[messageLength - 1].content;
     console.log(lastmessage);
+    const lastmessage = incomingMessages[messageLength - 1].content;
+    console.log(lastmessage);
   };
 
+  function split() {
+    const text = "";
+    const partial = text.split(",");
+    const partialmessage = partial[1].split(":");
+    const safeAddressFromXmtp = partialmessage[1];
+    const partialamount = partial[2].split(":");
+    const owedAmountByXmtp = partialamount[1];
+    console.log(safeAddressFromXmtp);
+    console.log(owedAmountByXmtp);
   function split() {
     const text = "";
     const partial = text.split(",");
@@ -102,6 +113,7 @@ const Sender = () => {
   const [url, setUrl] = useState();
   const [receiverAddress, setReceiverAddress] = useState();
   const [totalAmountOwed, setTotalAmountOwed] = useState();
+  const [currAmount, setCurrAmount] = useState();
 
   const router = useRouter();
 
@@ -376,10 +388,13 @@ const Sender = () => {
     await setUid(uid);
     await setUrl(url);
     setTotalAmountOwed(totalAmount);
+    await setUid(uid);
+    await setUrl(url);
+    setTotalAmountOwed(totalAmount);
 
     /// send an XMTP message along with signature itself
     await sendMessage(
-      `message:${safeAddressFromXmtp},safeadd:${safeAddressFromXmtp},totalAmount:${totalAmount},easurl:${url},easuid:${uid},signature:${signature},currentAmount:${payAmount}`
+      `message:${safeAddressFromXmtp},safeadd:${safeAddressFromXmtp},totalAmount:${totalAmount},easurl:${url},easuid:${uid},signature:${signature},currentAmount:${currAmount}`
     );
   };
 
@@ -399,6 +414,7 @@ const Sender = () => {
             </div>
             <div>
               <div className="flex">
+                <button onClick={addFundsToSafe} className="px-7 mx-5 py-1.5 rounded-xl bg-white text-indigo-500 border border-indigo-500 font-semibold hover:scale-105 duration-200">add funds</button>
                 <button
                   onClick={onOpen1}
                   className="px-7 mx-5 py-1.5 rounded-xl bg-white text-indigo-500 border border-indigo-500 font-semibold hover:scale-105 duration-200"
@@ -486,6 +502,12 @@ const Sender = () => {
                       EAS UID
                     </p>
                     <p className="mt-3 font-semibold">{uid}</p>
+                  </div>
+                  <div className="mt-4 flex justify-between w-full">
+                  <input className="border boder-black px-4 py-1 rounded-xl" onChange={(e) => setCurrAmount(e.target.value)} placeholder="amount"></input>
+                    <button className="px-7 mx-5 py-1.5 rounded-xl bg-white text-indigo-500 border border-indigo-500 font-semibold hover:scale-105 duration-200">
+                        Pay
+                    </button>
                   </div>
                 </div>
               </div>
