@@ -98,6 +98,10 @@ const Sender = () => {
   const [isLoading, setisLoading] = useState(false);
   const [channelDuration, setChannelDuration] = useState("");
   const [incomingMessages, setIncomingMessages] = useState();
+  const [uid, setUid] = useState();
+  const [url, setUrl] = useState();
+  const [receiverAddress, setReceiverAddress] = useState()
+  const [totalAmountOwed, setTotalAmountOwed] = useState()
 
   const router = useRouter();
 
@@ -348,6 +352,8 @@ const Sender = () => {
     const partialamount = partial[2].split(":");
     const owedAmountByXmtp = partialamount[1];
 
+    await setReceiverAddress(safeAddressFromXmtp)
+
     // / create an attestation
     const eas = new EASService(provider, signer);
     const senderAdd = await signer.getAddress();
@@ -365,6 +371,10 @@ const Sender = () => {
       channelId,
       totalAmount
     );
+
+    await setUid(uid)
+    await setUrl(url)
+    setTotalAmountOwed(totalAmount)
 
     /// send an XMTP message along with signature itself
     await sendMessage(
@@ -454,19 +464,19 @@ const Sender = () => {
                 <div className="flex flex-col mx-auto py-2 mt-3">
                     <div className="mx-3 flex flex-col justify-start">
                         <p className="text-indigo-500 text-xl font-semibold">Receiver's Address</p>
-                        <p className="mt-3 font-semibold">0x9B855D0Edb3111891a6A0059273904232c74815D</p>
+                        <p className="mt-3 font-semibold">{receiverAddress}</p>
                     </div>
                     <div className="mx-3 flex flex-col justify-start mt-3">
                         <p className="text-indigo-500 text-xl font-semibold">Total Amount Owed</p>
-                        <p className="mt-3 font-semibold">0x9B855D0Edb3111891a6A0059273904232c74815D</p>
+                        <p className="mt-3 font-semibold">{totalAmountOwed}</p>
                     </div>
                     <div className="mx-3 flex flex-col justify-start mt-3">
                         <p className="text-indigo-500 text-xl font-semibold">EAS URL</p>
-                        <p className="mt-3 font-semibold">0x9B855D0Edb3111891a6A0059273904232c74815D</p>
+                        <p className="mt-3 font-semibold">{url}</p>
                     </div>
                     <div className="mx-3 flex flex-col justify-start mt-3">
                         <p className="text-indigo-500 text-xl font-semibold">EAS UID</p>
-                        <p className="mt-3 font-semibold">0x9B855D0Edb3111891a6A0059273904232c74815D</p>
+                        <p className="mt-3 font-semibold">{uid}</p>
                     </div>
                 </div>
               </div>
