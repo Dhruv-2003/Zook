@@ -18,6 +18,8 @@ const Receiver = () => {
   const [incomingMessages, setIncomingMessages] = useState();
   const [receipt, setReceipt] = useState();
   const [showmore, setShowMore] = useState(false);
+  const [safeAddress, setSafeAddress] = useState();
+  const [totalOwedAmount, settotalOwedAmount] = useState();
 
   useEffect(() => {
     loadConversations();
@@ -45,7 +47,9 @@ const Receiver = () => {
     const partialamount = partial[2].split(":");
     const owedAmountByXmtp = partialamount[1];
     console.log(safeAddressFromXmtp);
+    setSafeAddress(safeAddressFromXmtp);
     console.log(owedAmountByXmtp);
+    settotalOwedAmount(owedAmountByXmtp);
   };
 
   const verifySignatures = async (safeAddress, amount, sig, senderAddress) => {

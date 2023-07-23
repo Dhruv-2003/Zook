@@ -343,14 +343,15 @@ const Sender = () => {
     const lastmessage = messages[messageLength - 1].content;
     console.log(messages);
 
-    // const partial = lastmessage.split(",");
-    // const partialmessage = partial[1].split(":");
-    // const safeAddressFromXmtp = partialmessage[1];
-    // const partialamount = partial[2].split(":");
-    // const owedAmountByXmtp = partialamount[1];
-    // const transAmount = parseEther(currAmount);
+    const partial = lastmessage.split(",");
+    const partialmessage = partial[1].split(":");
+    const safeAddressFromXmtp = partialmessage[1];
+    const partialamount = partial[2].split(":");
+    const owedAmountByXmtp = partialamount[1];
+    const transAmount = parseEther(currAmount);
     // const totalAmount = owedAmountByXmtp + transAmount;
 
+    // console.log()
 
     const safeAddress = getUserSafe();
     const totalAmount = 0;
@@ -385,13 +386,17 @@ const Sender = () => {
     setTotalAmountOwed(totalAmount);
     /// send an XMTP message along with signature itself
     await sendMessage(
-      `message:${safeAddressFromXmtp},safeadd:${safeAddressFromXmtp},totalAmount:${totalAmount},easurl:${url},easuid:${uid},signature:${signature},currentAmount:${currAmount}`,"0x72D7968514E5e6659CeBB5CABa7E02CFf8eda389"
+      `message:${safeAddressFromXmtp},safeadd:${safeAddressFromXmtp},totalAmount:${totalAmount},easurl:${url},easuid:${uid},signature:${signature},currentAmount:${currAmount}`,
+      "0x72D7968514E5e6659CeBB5CABa7E02CFf8eda389"
     );
   };
 
   const generateSignMessage = (safeAddress, totalAmount) => {
     // safeAddress , totalOwedAmount
-    const msg = encodePacked(["address", "uint256"], [safeAddress, totalAmount]);
+    const msg = encodePacked(
+      ["address", "uint256"],
+      [safeAddress, totalAmount]
+    );
     return msg;
   };
 
