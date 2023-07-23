@@ -23,7 +23,7 @@ export default function Home() {
         "0x9B855D0Edb3111891a6A0059273904232c74815D",
         10 ** 15,
         "0xb1d98F41b3a1885b7Daa59d318E78cEfDE13C3B5",
-        0,
+        1,
         10 ** 15
       );
       console.log(eas);
@@ -50,15 +50,16 @@ export default function Home() {
       <div className="mt-16 w-screen">
         <div className="flex justify-center mx-auto w-3/5">
           <p className="text-indigo-500 text-3xl font-semibold text-center">
-            Payment Channel Solution enabling ZK-powered Yield-generating
+            Payment Channel Solution enabling Yield-generating
             transactions
           </p>
+          <p onClick={createAttestations}>hello</p>
         </div>
       </div>
       <div className="mt-20 w-screen">
         <div className="w-3/5 mx-auto flex flex-col">
           <div className="flex mx-auto">
-            <p>lets start a payment channel</p>
+            <p className="text-indigo-500 text-xl font-semibold text-center">lets start a payment channel</p>
           </div>
           <div className="flex justify-between mt-10">
             <div

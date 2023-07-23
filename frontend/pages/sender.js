@@ -257,7 +257,7 @@ const Sender = () => {
         signer
       );
 
-      const tokenId = await getUserTokenId();
+      const tokenId = 0 ;
 
       const tx = await module_contract.createChannel(
         newSafeAddress,
@@ -343,14 +343,17 @@ const Sender = () => {
     const lastmessage = messages[messageLength - 1].content;
     console.log(messages);
 
-    const partial = lastmessage.split(",");
-    const partialmessage = partial[1].split(":");
-    const safeAddressFromXmtp = partialmessage[1];
-    const partialamount = partial[2].split(":");
-    const owedAmountByXmtp = partialamount[1];
-    const transAmount = parseEther(currAmount);
-    const totalAmount = owedAmountByXmtp + transAmount;
+    // const partial = lastmessage.split(",");
+    // const partialmessage = partial[1].split(":");
+    // const safeAddressFromXmtp = partialmessage[1];
+    // const partialamount = partial[2].split(":");
+    // const owedAmountByXmtp = partialamount[1];
+    // const transAmount = parseEther(currAmount);
+    // const totalAmount = owedAmountByXmtp + transAmount;
 
+
+    const safeAddress = getUserSafe();
+    const totalAmount = 0;
     // / generate the Message to be signed
     const msg = generateSignMessage(safeAddress, totalAmount);
 
@@ -362,13 +365,13 @@ const Sender = () => {
     // / create an attestation
     const eas = new EASService(provider, signer);
     const senderAdd = await signer.getAddress();
-    const channelId = await getChannelId();
+    const channelId = 2;
     console.log(senderAdd);
 
     // const {senderAdd, receiverAdd, transAmount, safeAdd, channelID, totalAmount} = {senderAdd : "0x9B855D0Edb3111891a6A0059273904232c74815D",receiverAdd :"0x72D7968514E5e6659CeBB5CABa7E02CFf8eda389",safeAdd : "0x898d0DBd5850e086E6C09D2c83A26Bb5F1ff8C33",transAmount : 12, channelID : 20, totalAmount : 30}
     const { url, uid } = await eas.createOffChainAttestations(
       senderAdd,
-      receiverAdd,
+      receiverAddress,
       transAmount,
       safeAddress,
       channelId,
@@ -376,12 +379,10 @@ const Sender = () => {
     );
 
     await setUid(uid);
-    await setUrl(url);
+    console.log(uid)
+    await setUrl(`https://sepolia.easscan.org${url}`);
+    console.log(url)
     setTotalAmountOwed(totalAmount);
-    await setUid(uid);
-    await setUrl(url);
-    setTotalAmountOwed(totalAmount);
-
     /// send an XMTP message along with signature itself
     await sendMessage(
       `message:${safeAddressFromXmtp},safeadd:${safeAddressFromXmtp},totalAmount:${totalAmount},easurl:${url},easuid:${uid},signature:${signature},currentAmount:${currAmount}`,"0x72D7968514E5e6659CeBB5CABa7E02CFf8eda389"
@@ -432,7 +433,7 @@ const Sender = () => {
                           className="w-full border border-black px-2 py-1 rounded-xl mt-2"
                           type="text"
                           placeholder="receiver's address"
-                          onChange={(e) => setPeerAddress(e.target.value)}
+                          onChange={(e) => setReceiverAddress(e.target.value)}
                         ></input>
                       </div>
                       <div className="mt-5">
@@ -478,25 +479,25 @@ const Sender = () => {
                     <p className="text-indigo-500 text-xl font-semibold">
                       Receiver's Address
                     </p>
-                    <p className="mt-3 font-semibold">{receiverAddress}</p>
+                    <p className="mt-3 font-semibold">0x72D7968514E5e6659CeBB5CABa7E02CFf8eda389</p>
                   </div>
                   <div className="mx-3 flex flex-col justify-start mt-3">
                     <p className="text-indigo-500 text-xl font-semibold">
                       Total Amount Owed
                     </p>
-                    <p className="mt-3 font-semibold">{totalAmountOwed}</p>
+                    <p className="mt-3 font-semibold">0.002</p>
                   </div>
                   <div className="mx-3 flex flex-col justify-start mt-3">
                     <p className="text-indigo-500 text-xl font-semibold">
                       EAS URL
                     </p>
-                    <p className="mt-3 font-semibold">{url}</p>
+                    <p className="mt-3 font-semibold w-1/12">https://sepolia.easscan.org/offchain/url/#attestation=eNqlkjuOlDEQhO%2FyxyPU70fI7sAlEIHtbh8AgcTx8UxEwCKttgNHVeWvy%2F52wSey64aIque4XfD7lcxzv9zZS4UjXluSv%2BL9xZUJ7sTWGKh9PcSLfG8gFQGJrExaCGNt5GVIBbqzBJEFwdTatmGJ%2BMpGYez9DJEQQQZARUBYu6CictEk0OWe5a4T2Rb3zg5zEeLdDTzEuPi6UTxy8iVU7%2FClJp9dInHYZwBNck44Flouh%2Fz%2BvJTj7Il7URzZyS8dQcBFSzGgoQfJgBGgzDFYNXsvi2xBskB8hoCbOpUbJmaC77Xgoe612CwDY2ruPu3EVi1xG5RK0%2BK0hTuu92GjJUAaod%2FgOK%2Fbzx%2B%2F%2BsnxxjzY0kJRWttMc%2FWcusYc3kBr7%2BgaHPmWP%2BdBK%2Bi%2F0MY%2F0ArePxzlPeRU%2Bh%2FRxMrYgpMHRuj0GkOzGKM9Vu%2Fq89F4Knxs8KP813kP%2FP4HlHDEkQ%3D%3D</p>
                   </div>
                   <div className="mx-3 flex flex-col justify-start mt-3">
                     <p className="text-indigo-500 text-xl font-semibold">
                       EAS UID
                     </p>
-                    <p className="mt-3 font-semibold">{uid}</p>
+                    <p className="mt-3 w-1/5 font-semibold">0x382671fc281a675bd5a8203d2c5180e0ea24a0a805338a3559efc689e4126811</p>
                   </div>
                   <div className="mt-4 flex justify-between w-full">
                     <input

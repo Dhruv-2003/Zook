@@ -18,7 +18,7 @@ import { ethers } from "ethers";
 // Choose the attestations on whatever chain you want to
 const EASContractAddress = "0xC2679fBD37d54388Ce493F1DB75320D236e1815e"; // Sepolia v0.26
 const EASVersion = "0.26";
-const CHAINID = 1;
+const CHAINID = 11155111;
 
 const SchemaUID =
   "0x076572d761919907fcc038a3ecc3669818b59fe4408f55d476a2952b684891f8";

@@ -131,7 +131,9 @@ const Receiver = () => {
               </div>
             </div>
             <div className="w-1/2 flex flex-col justify-end border border-indigo-500 ml-5 mt-5 rounded-xl">
-              <div className="flex justify-center mx-auto text-center py-2"></div>
+              <div className="flex justify-center mx-auto text-center py-2">
+                <button className="px-7 mx-5 py-1.5 rounded-xl bg-white text-indigo-500 border border-indigo-500 font-semibold hover:scale-105 duration-200">Withdraw</button>
+              </div>
             </div>
           </div>
         </div>
