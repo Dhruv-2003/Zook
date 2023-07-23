@@ -351,6 +351,8 @@ const Sender = () => {
     const transAmount = parseEther(currAmount);
     const totalAmount = owedAmountByXmtp + transAmount;
 
+    // console.log()
+
     // / generate the Message to be signed
     const msg = generateSignMessage(safeAddress, totalAmount);
 
@@ -384,13 +386,17 @@ const Sender = () => {
 
     /// send an XMTP message along with signature itself
     await sendMessage(
-      `message:${safeAddressFromXmtp},safeadd:${safeAddressFromXmtp},totalAmount:${totalAmount},easurl:${url},easuid:${uid},signature:${signature},currentAmount:${currAmount}`,"0x72D7968514E5e6659CeBB5CABa7E02CFf8eda389"
+      `message:${safeAddressFromXmtp},safeadd:${safeAddressFromXmtp},totalAmount:${totalAmount},easurl:${url},easuid:${uid},signature:${signature},currentAmount:${currAmount}`,
+      "0x72D7968514E5e6659CeBB5CABa7E02CFf8eda389"
     );
   };
 
   const generateSignMessage = (safeAddress, totalAmount) => {
     // safeAddress , totalOwedAmount
-    const msg = encodePacked(["address", "uint256"], [safeAddress, totalAmount]);
+    const msg = encodePacked(
+      ["address", "uint256"],
+      [safeAddress, totalAmount]
+    );
     return msg;
   };
 
