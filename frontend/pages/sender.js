@@ -91,207 +91,195 @@ const Sender = () => {
     const owedAmountByXmtp = partialamount[1];
     console.log(safeAddressFromXmtp);
     console.log(owedAmountByXmtp);
-    function split() {
-      const text = "";
-      const partial = text.split(",");
-      const partialmessage = partial[1].split(":");
-      const safeAddressFromXmtp = partialmessage[1];
-      const partialamount = partial[2].split(":");
-      const owedAmountByXmtp = partialamount[1];
-      console.log(safeAddressFromXmtp);
-      console.log(owedAmountByXmtp);
-    }
+  }
 
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [safeSetupComplete, setsafeSetupComplete] = useState(false);
-    const [isLoading, setisLoading] = useState(false);
-    const [channelDuration, setChannelDuration] = useState("");
-    const [incomingMessages, setIncomingMessages] = useState();
-    const [uid, setUid] = useState();
-    const [url, setUrl] = useState();
-    const [receiverAddress, setReceiverAddress] = useState();
-    const [totalAmountOwed, setTotalAmountOwed] = useState();
-    const [currAmount, setCurrAmount] = useState();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [safeSetupComplete, setsafeSetupComplete] = useState(false);
+  const [isLoading, setisLoading] = useState(false);
+  const [channelDuration, setChannelDuration] = useState("");
+  const [incomingMessages, setIncomingMessages] = useState();
+  const [uid, setUid] = useState();
+  const [url, setUrl] = useState();
+  const [receiverAddress, setReceiverAddress] = useState();
+  const [totalAmountOwed, setTotalAmountOwed] = useState();
+  const [currAmount, setCurrAmount] = useState();
 
-    const router = useRouter();
+  const router = useRouter();
 
-    const login = async () => {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      setProvider(provider);
-      const signer = provider.getSigner();
-      setSigner(signer);
-      const eoa = await signer.getAddress();
-      console.log(eoa);
-      console.log(provider);
-    };
+  const login = async () => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    setProvider(provider);
+    const signer = provider.getSigner();
+    setSigner(signer);
+    const eoa = await signer.getAddress();
+    console.log(eoa);
+    console.log(provider);
+  };
 
-    const createSafeWallet = async () => {
-      try {
-        setisLoading(true);
-        if (!signer) {
-          console.log("SignIn/ SignUp");
-          return;
-        }
-        const ethAdapter = new EthersAdapter({
-          ethers,
-          signerOrProvider: signer,
-        });
+  const createSafeWallet = async () => {
+    try {
+      setisLoading(true);
+      if (!signer) {
+        console.log("SignIn/ SignUp");
+        return;
+      }
+      const ethAdapter = new EthersAdapter({
+        ethers,
+        signerOrProvider: signer,
+      });
 
-        const safeFactory = await SafeFactory.create({
-          ethAdapter: ethAdapter,
-        });
+      const safeFactory = await SafeFactory.create({
+        ethAdapter: ethAdapter,
+      });
 
-        const safeService = new SafeApiKit({
-          txServiceUrl: "https://safe-transaction-goerli.safe.global",
-          ethAdapter,
-        });
+      const safeService = new SafeApiKit({
+        txServiceUrl: "https://safe-transaction-goerli.safe.global",
+        ethAdapter,
+      });
 
-        const owners = [`${await signer.getAddress()}`];
-        const threshold = 1;
+      const owners = [`${await signer.getAddress()}`];
+      const threshold = 1;
 
-        // const safeAddress = await getUserSafe(signer);
-        // console.log(safeAddress);
-        // if (safeAddress) {
-        //   const safeSDK = await Safe.create({ ethAdapter, safeAddress });
+      // const safeAddress = await getUserSafe(signer);
+      // console.log(safeAddress);
+      // if (safeAddress) {
+      //   const safeSDK = await Safe.create({ ethAdapter, safeAddress });
 
-        //   // await enableModule(safeSDK,recoveryModuleContractAddress)
-        //   setSafeSDK(safeSDK);
-        //   setSafeAddress(safeAddress);
-        //   setsafeSetupComplete(true);
-        //   setisLoading(false);
+      //   // await enableModule(safeSDK,recoveryModuleContractAddress)
+      //   setSafeSDK(safeSDK);
+      //   setSafeAddress(safeAddress);
+      //   setsafeSetupComplete(true);
+      //   setisLoading(false);
 
-        //   return;
-        // }
+      //   return;
+      // }
 
-        const safeAccountConfig = {
-          owners,
-          threshold,
-        };
-        console.log(safeAccountConfig);
-        // / Will it have gas fees to deploy this safe tx
-        const nonce = await provider.getTransactionCount(
-          await signer.getAddress()
-        );
-        const safeSdk = await safeFactory.deploySafe({
-          safeAccountConfig,
-          saltNonce: nonce,
-        });
+      const safeAccountConfig = {
+        owners,
+        threshold,
+      };
+      console.log(safeAccountConfig);
+      // / Will it have gas fees to deploy this safe tx
+      const nonce = await provider.getTransactionCount(
+        await signer.getAddress()
+      );
+      const safeSdk = await safeFactory.deploySafe({
+        safeAccountConfig,
+        saltNonce: nonce,
+      });
 
-        console.log("Creating and deploying the new safe");
+      console.log("Creating and deploying the new safe");
 
-        // const newSafeAddress = "0x2c4ed5ea89D8231C4E64F02f0da4E5ffcE4263D9";
+      // const newSafeAddress = "0x2c4ed5ea89D8231C4E64F02f0da4E5ffcE4263D9";
 
-        // / wait for the deployement to be completed
-        const newSafeAddress = await safeSdk.getAddress();
+      // / wait for the deployement to be completed
+      const newSafeAddress = await safeSdk.getAddress();
 
-        if (newSafeAddress) {
-          setsafeSetupComplete(true);
-          setisLoading(false);
-        }
-
-        setSafeSDK(safeSdk);
-        setSafeAddress(newSafeAddress);
-
-        await enableModule(safeSdk);
-
+      if (newSafeAddress) {
+        setsafeSetupComplete(true);
         setisLoading(false);
-        console.log(`created account : ${newSafeAddress}`);
-        return newSafeAddress;
-      } catch (error) {
-        console.log(error);
       }
-    };
 
-    const enableModule = async (safesd) => {
-      // createSafeWallet();
-      console.log(safesd);
-      const moduleAddress = "0x42f5d36cb22f7abb5b98ebe022aee15f2621a20e";
-      const isEnabled = await safesd.isModuleEnabled(moduleAddress);
+      setSafeSDK(safeSdk);
+      setSafeAddress(newSafeAddress);
 
-      if (!isEnabled) {
-        const safeTransaction = await safesd.createEnableModuleTx(
-          moduleAddress
-        );
-        const txResponse = await safesd.executeTransaction(safeTransaction);
-        await txResponse.transactionResponse?.wait();
+      await enableModule(safeSdk);
 
-        console.log(txResponse);
-        return true;
-      } else {
-        console.log("Module Already Enabled");
-        return true;
-      }
-    };
+      setisLoading(false);
+      console.log(`created account : ${newSafeAddress}`);
+      return newSafeAddress;
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-    async function getSafe() {
-      if (provider && signer) {
-        const ethAdapter = new EthersAdapter({
-          ethers,
-          signerOrProvider: signer,
-        });
-        const safeAddress = await getUserSafe(signer);
-        console.log(safeAddress);
-        if (safeAddress) {
-          const safeSDK = await Safe.create({ ethAdapter, safeAddress });
-          setSafeSDK(safeSDK);
-          console.log(safeSdk);
-        }
+  const enableModule = async (safesd) => {
+    // createSafeWallet();
+    console.log(safesd);
+    const moduleAddress = "0x42f5d36cb22f7abb5b98ebe022aee15f2621a20e";
+    const isEnabled = await safesd.isModuleEnabled(moduleAddress);
+
+    if (!isEnabled) {
+      const safeTransaction = await safesd.createEnableModuleTx(moduleAddress);
+      const txResponse = await safesd.executeTransaction(safeTransaction);
+      await txResponse.transactionResponse?.wait();
+
+      console.log(txResponse);
+      return true;
+    } else {
+      console.log("Module Already Enabled");
+      return true;
+    }
+  };
+
+  async function getSafe() {
+    if (provider && signer) {
+      const ethAdapter = new EthersAdapter({
+        ethers,
+        signerOrProvider: signer,
+      });
+      const safeAddress = await getUserSafe(signer);
+      console.log(safeAddress);
+      if (safeAddress) {
+        const safeSDK = await Safe.create({ ethAdapter, safeAddress });
+        setSafeSDK(safeSDK);
+        console.log(safeSdk);
       }
     }
+  }
 
-    const getUserTokenId = async () => {
-      const Module_contract = new Contract(
+  const getUserTokenId = async () => {
+    const Module_contract = new Contract(
+      channelModule_Goerli,
+      Module_ABI,
+      provider
+    );
+    const senderAddress = await signer.getAddress();
+    const tokenId = await Module_contract.senderTokenInfo(senderAddress);
+    console.log(tokenId);
+
+    /// maybe need to convert the Token ID
+    return tokenId;
+  };
+
+  const createNewChannel = async () => {
+    // creates a New Safe for this wallet , Channel specific
+    // enable Module
+    const newSafeAddress = await createSafeWallet();
+
+    // const newSafeAddress = safeAddress;
+    console.log(newSafeAddress);
+    if (newSafeAddress) {
+      // Add record in the module
+      const module_contract = new Contract(
         channelModule_Goerli,
         Module_ABI,
-        provider
+        signer
       );
-      const senderAddress = await signer.getAddress();
-      const tokenId = await Module_contract.senderTokenInfo(senderAddress);
-      console.log(tokenId);
 
-      /// maybe need to convert the Token ID
-      return tokenId;
-    };
+      const tokenId = await getUserTokenId();
 
-    const createNewChannel = async (recepient, duration) => {
-      // creates a New Safe for this wallet , Channel specific
-      // enable Module
-      const newSafeAddress = await createSafeWallet();
+      const tx = await module_contract.createChannel(
+        newSafeAddress,
+        peerAddress,
+        channelDuration,
+        tokenId
+      );
 
-      // const newSafeAddress = safeAddress;
-      console.log(newSafeAddress);
-      if (newSafeAddress) {
-        // Add record in the module
-        const module_contract = new Contract(
-          channelModule_Goerli,
-          Module_ABI,
-          signer
-        );
+      await tx.wait();
 
-        const tokenId = await getUserTokenId();
+      console.log(tx);
 
-        const tx = await module_contract.createChannel(
-          newSafeAddress,
-          peerAddress,
-          channelDuration,
-          tokenId
-        );
-
-        await tx.wait();
-
-        console.log(tx);
-
-        // const newSafeAddress = "0x9B855D0Edb3111891a6A0059273904232c74815D";
-        // send  a conversation to the recpient informing them regarding the channel creation , along with the safeAddress
-        await sendMessage(
-          `message:Here is our Safe Smart Contract wallet Address for the Channel:${newSafeAddress},safeAddress:${newSafeAddress},totalAmount:${0}`,
-          peerAddress
-        );
-      } else {
-        console.log("NO SAFE ADDR FOUND");
-      }
-    };
-  }
+      // const newSafeAddress = "0x9B855D0Edb3111891a6A0059273904232c74815D";
+      // send  a conversation to the recpient informing them regarding the channel creation , along with the safeAddress
+      await sendMessage(
+        `message:Here is our Safe Smart Contract wallet Address for the Channel:${newSafeAddress},safeAddress:${newSafeAddress},totalAmount:${0}`,
+        peerAddress
+      );
+    } else {
+      console.log("NO SAFE ADDR FOUND");
+    }
+  };
 
   // Need to add the funds before to the Channel
   const addFundsToSafe = async () => {
