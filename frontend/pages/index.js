@@ -2,6 +2,9 @@ import { useRouter } from "next/router";
 import { useAuth } from "../auth-context/auth";
 import EASService from "../components/eas";
 import SafeAccountCreation from "../components/safeaccountcreation";
+import { Contract } from "ethers";
+import { channelModule_Goerli } from "../constants/contracts";
+import { Module_ABI } from "../constants/abi";
 
 export default function Home() {
   const router = useRouter();
@@ -27,6 +30,18 @@ export default function Home() {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const onboardAsSender = async () => {
+    const Module_contract = new Contract(
+      channelModule_Goerli,
+      Module_ABI,
+      signer
+    );
+    const tx = await Module_contract.createTokenForSender();
+
+    await tx.wait();
+    console.log(tx);
   };
 
   return (
@@ -71,8 +86,7 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <div>
-          </div>
+          <div></div>
         </div>
       </div>
     </div>

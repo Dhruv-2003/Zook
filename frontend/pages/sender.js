@@ -224,13 +224,13 @@ const Sender = () => {
   }
 
   const getUserTokenId = async () => {
-    const NFT_Contract = new Contract(
-      ERC1155NFTRecepeint_Goerli,
-      ERC1155Recepient_ABI,
+    const Module_contract = new Contract(
+      channelModule_Goerli,
+      Module_ABI,
       provider
     );
     const senderAddress = await signer.getAddress();
-    const tokenId = await NFT_Contract.senderTokenInfo(senderAddress);
+    const tokenId = await Module_contract.senderTokenInfo(senderAddress);
     console.log(tokenId);
 
     /// maybe need to convert the Token ID

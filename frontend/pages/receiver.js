@@ -35,21 +35,21 @@ const Receiver = () => {
     // console.log(lastmessage)
 
     const conversation = await xmtp_client.conversations.newConversation(
-        "0x72D7968514E5e6659CeBB5CABa7E02CFf8eda389"
+      "0x72D7968514E5e6659CeBB5CABa7E02CFf8eda389"
     );
-    const messages =  await conversation.messages();
-    console.log(messages)
+    const messages = await conversation.messages();
+    console.log(messages);
   };
 
-  function split(){
-    const text = ""
-    const partial = text.split(",")
-    const partialmessage = partial[1].split(":")
-    const safeAddressFromXmtp = partialmessage[1]
-    const partialamount = partial[2].split(":")
-    const owedAmountByXmtp = partialamount[1]
-    console.log(safeAddressFromXmtp)
-    console.log(owedAmountByXmtp)
+  function split() {
+    const text = "";
+    const partial = text.split(",");
+    const partialmessage = partial[1].split(":");
+    const safeAddressFromXmtp = partialmessage[1];
+    const partialamount = partial[2].split(":");
+    const owedAmountByXmtp = partialamount[1];
+    console.log(safeAddressFromXmtp);
+    console.log(owedAmountByXmtp);
   }
 
   const verifySignatures = async (safeAddress, amount, sig, senderAddress) => {
