@@ -339,9 +339,11 @@ const Sender = () => {
       "0x9B855D0Edb3111891a6A0059273904232c74815D"
     );
     const messages = await conversation.messages();
+    const messageLength = await messages.length;
+    const lastmessage = messages[messageLength - 1].content;
     console.log(messages);
 
-    const partial = messages.split(",");
+    const partial = lastmessage.split(",");
     const partialmessage = partial[1].split(":");
     const safeAddressFromXmtp = partialmessage[1];
     const partialamount = partial[2].split(":");
