@@ -379,13 +379,13 @@ const Sender = () => {
 
     /// send an XMTP message along with signature itself
     await sendMessage(
-      `message:${safeAddressFromXmtp},safeadd:${safeAddressFromXmtp},totalAmount:${totalAmount},easurl:${url},easuid:${uid},signature:${signature},currentAmount:${currAmount}`
+      `message:${safeAddressFromXmtp},safeadd:${safeAddressFromXmtp},totalAmount:${totalAmount},easurl:${url},easuid:${uid},signature:${signature},currentAmount:${currAmount}`,"0x72D7968514E5e6659CeBB5CABa7E02CFf8eda389"
     );
   };
 
   const generateSignMessage = (safeAddress, totalAmount) => {
     // safeAddress , totalOwedAmount
-    const msg = encodePacked(["address", "uint256"], [safeAddress, amount]);
+    const msg = encodePacked(["address", "uint256"], [safeAddress, totalAmount]);
     return msg;
   };
 
@@ -490,7 +490,7 @@ const Sender = () => {
                   </div>
                   <div className="mt-4 flex justify-between w-full">
                   <input className="border boder-black px-4 py-1 rounded-xl" onChange={(e) => setCurrAmount(e.target.value)} placeholder="amount"></input>
-                    <button className="px-7 mx-5 py-1.5 rounded-xl bg-white text-indigo-500 border border-indigo-500 font-semibold hover:scale-105 duration-200">
+                    <button onClick={payRecepientViaChannel} className="px-7 mx-5 py-1.5 rounded-xl bg-white text-indigo-500 border border-indigo-500 font-semibold hover:scale-105 duration-200">
                         Pay
                     </button>
                   </div>
