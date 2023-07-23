@@ -80,8 +80,6 @@ const Sender = () => {
     const messageLength = await incomingMessages.length;
     const lastmessage = incomingMessages[messageLength - 1].content;
     console.log(lastmessage);
-    const lastmessage = incomingMessages[messageLength - 1].content;
-    console.log(lastmessage);
   };
 
   function split() {
@@ -93,205 +91,207 @@ const Sender = () => {
     const owedAmountByXmtp = partialamount[1];
     console.log(safeAddressFromXmtp);
     console.log(owedAmountByXmtp);
-  function split() {
-    const text = "";
-    const partial = text.split(",");
-    const partialmessage = partial[1].split(":");
-    const safeAddressFromXmtp = partialmessage[1];
-    const partialamount = partial[2].split(":");
-    const owedAmountByXmtp = partialamount[1];
-    console.log(safeAddressFromXmtp);
-    console.log(owedAmountByXmtp);
-  }
+    function split() {
+      const text = "";
+      const partial = text.split(",");
+      const partialmessage = partial[1].split(":");
+      const safeAddressFromXmtp = partialmessage[1];
+      const partialamount = partial[2].split(":");
+      const owedAmountByXmtp = partialamount[1];
+      console.log(safeAddressFromXmtp);
+      console.log(owedAmountByXmtp);
+    }
 
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [safeSetupComplete, setsafeSetupComplete] = useState(false);
-  const [isLoading, setisLoading] = useState(false);
-  const [channelDuration, setChannelDuration] = useState("");
-  const [incomingMessages, setIncomingMessages] = useState();
-  const [uid, setUid] = useState();
-  const [url, setUrl] = useState();
-  const [receiverAddress, setReceiverAddress] = useState();
-  const [totalAmountOwed, setTotalAmountOwed] = useState();
-  const [currAmount, setCurrAmount] = useState();
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [safeSetupComplete, setsafeSetupComplete] = useState(false);
+    const [isLoading, setisLoading] = useState(false);
+    const [channelDuration, setChannelDuration] = useState("");
+    const [incomingMessages, setIncomingMessages] = useState();
+    const [uid, setUid] = useState();
+    const [url, setUrl] = useState();
+    const [receiverAddress, setReceiverAddress] = useState();
+    const [totalAmountOwed, setTotalAmountOwed] = useState();
+    const [currAmount, setCurrAmount] = useState();
 
-  const router = useRouter();
+    const router = useRouter();
 
-  const login = async () => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    setProvider(provider);
-    const signer = provider.getSigner();
-    setSigner(signer);
-    const eoa = await signer.getAddress();
-    console.log(eoa);
-    console.log(provider);
-  };
+    const login = async () => {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      setProvider(provider);
+      const signer = provider.getSigner();
+      setSigner(signer);
+      const eoa = await signer.getAddress();
+      console.log(eoa);
+      console.log(provider);
+    };
 
-  const createSafeWallet = async () => {
-    try {
-      setisLoading(true);
-      if (!signer) {
-        console.log("SignIn/ SignUp");
-        return;
-      }
-      const ethAdapter = new EthersAdapter({
-        ethers,
-        signerOrProvider: signer,
-      });
+    const createSafeWallet = async () => {
+      try {
+        setisLoading(true);
+        if (!signer) {
+          console.log("SignIn/ SignUp");
+          return;
+        }
+        const ethAdapter = new EthersAdapter({
+          ethers,
+          signerOrProvider: signer,
+        });
 
-      const safeFactory = await SafeFactory.create({
-        ethAdapter: ethAdapter,
-      });
+        const safeFactory = await SafeFactory.create({
+          ethAdapter: ethAdapter,
+        });
 
-      const safeService = new SafeApiKit({
-        txServiceUrl: "https://safe-transaction-goerli.safe.global",
-        ethAdapter,
-      });
+        const safeService = new SafeApiKit({
+          txServiceUrl: "https://safe-transaction-goerli.safe.global",
+          ethAdapter,
+        });
 
-      const owners = [`${await signer.getAddress()}`];
-      const threshold = 1;
+        const owners = [`${await signer.getAddress()}`];
+        const threshold = 1;
 
-      // const safeAddress = await getUserSafe(signer);
-      // console.log(safeAddress);
-      // if (safeAddress) {
-      //   const safeSDK = await Safe.create({ ethAdapter, safeAddress });
+        // const safeAddress = await getUserSafe(signer);
+        // console.log(safeAddress);
+        // if (safeAddress) {
+        //   const safeSDK = await Safe.create({ ethAdapter, safeAddress });
 
-      //   // await enableModule(safeSDK,recoveryModuleContractAddress)
-      //   setSafeSDK(safeSDK);
-      //   setSafeAddress(safeAddress);
-      //   setsafeSetupComplete(true);
-      //   setisLoading(false);
+        //   // await enableModule(safeSDK,recoveryModuleContractAddress)
+        //   setSafeSDK(safeSDK);
+        //   setSafeAddress(safeAddress);
+        //   setsafeSetupComplete(true);
+        //   setisLoading(false);
 
-      //   return;
-      // }
+        //   return;
+        // }
 
-      const safeAccountConfig = {
-        owners,
-        threshold,
-      };
-      console.log(safeAccountConfig);
-      // / Will it have gas fees to deploy this safe tx
-      const nonce = await provider.getTransactionCount(
-        await signer.getAddress()
-      );
-      const safeSdk = await safeFactory.deploySafe({
-        safeAccountConfig,
-        saltNonce: nonce,
-      });
+        const safeAccountConfig = {
+          owners,
+          threshold,
+        };
+        console.log(safeAccountConfig);
+        // / Will it have gas fees to deploy this safe tx
+        const nonce = await provider.getTransactionCount(
+          await signer.getAddress()
+        );
+        const safeSdk = await safeFactory.deploySafe({
+          safeAccountConfig,
+          saltNonce: nonce,
+        });
 
-      console.log("Creating and deploying the new safe");
+        console.log("Creating and deploying the new safe");
 
-      // const newSafeAddress = "0x2c4ed5ea89D8231C4E64F02f0da4E5ffcE4263D9";
+        // const newSafeAddress = "0x2c4ed5ea89D8231C4E64F02f0da4E5ffcE4263D9";
 
-      // / wait for the deployement to be completed
-      const newSafeAddress = await safeSdk.getAddress();
+        // / wait for the deployement to be completed
+        const newSafeAddress = await safeSdk.getAddress();
 
-      if (newSafeAddress) {
-        setsafeSetupComplete(true);
+        if (newSafeAddress) {
+          setsafeSetupComplete(true);
+          setisLoading(false);
+        }
+
+        setSafeSDK(safeSdk);
+        setSafeAddress(newSafeAddress);
+
+        await enableModule(safeSdk);
+
         setisLoading(false);
+        console.log(`created account : ${newSafeAddress}`);
+        return newSafeAddress;
+      } catch (error) {
+        console.log(error);
       }
+    };
 
-      setSafeSDK(safeSdk);
-      setSafeAddress(newSafeAddress);
+    const enableModule = async (safesd) => {
+      // createSafeWallet();
+      console.log(safesd);
+      const moduleAddress = "0x42f5d36cb22f7abb5b98ebe022aee15f2621a20e";
+      const isEnabled = await safesd.isModuleEnabled(moduleAddress);
 
-      await enableModule(safeSdk);
+      if (!isEnabled) {
+        const safeTransaction = await safesd.createEnableModuleTx(
+          moduleAddress
+        );
+        const txResponse = await safesd.executeTransaction(safeTransaction);
+        await txResponse.transactionResponse?.wait();
 
-      setisLoading(false);
-      console.log(`created account : ${newSafeAddress}`);
-      return newSafeAddress;
-    } catch (error) {
-      console.log(error);
-    }
-  };
+        console.log(txResponse);
+        return true;
+      } else {
+        console.log("Module Already Enabled");
+        return true;
+      }
+    };
 
-  const enableModule = async (safesd) => {
-    // createSafeWallet();
-    console.log(safesd);
-    const moduleAddress = "0x42f5d36cb22f7abb5b98ebe022aee15f2621a20e";
-    const isEnabled = await safesd.isModuleEnabled(moduleAddress);
-
-    if (!isEnabled) {
-      const safeTransaction = await safesd.createEnableModuleTx(moduleAddress);
-      const txResponse = await safesd.executeTransaction(safeTransaction);
-      await txResponse.transactionResponse?.wait();
-
-      console.log(txResponse);
-      return true;
-    } else {
-      console.log("Module Already Enabled");
-      return true;
-    }
-  };
-
-  async function getSafe() {
-    if (provider && signer) {
-      const ethAdapter = new EthersAdapter({
-        ethers,
-        signerOrProvider: signer,
-      });
-      const safeAddress = await getUserSafe(signer);
-      console.log(safeAddress);
-      if (safeAddress) {
-        const safeSDK = await Safe.create({ ethAdapter, safeAddress });
-        setSafeSDK(safeSDK);
-        console.log(safeSdk);
+    async function getSafe() {
+      if (provider && signer) {
+        const ethAdapter = new EthersAdapter({
+          ethers,
+          signerOrProvider: signer,
+        });
+        const safeAddress = await getUserSafe(signer);
+        console.log(safeAddress);
+        if (safeAddress) {
+          const safeSDK = await Safe.create({ ethAdapter, safeAddress });
+          setSafeSDK(safeSDK);
+          console.log(safeSdk);
+        }
       }
     }
-  }
 
-  const getUserTokenId = async () => {
-    const Module_contract = new Contract(
-      channelModule_Goerli,
-      Module_ABI,
-      provider
-    );
-    const senderAddress = await signer.getAddress();
-    const tokenId = await Module_contract.senderTokenInfo(senderAddress);
-    console.log(tokenId);
-
-    /// maybe need to convert the Token ID
-    return tokenId;
-  };
-
-  const createNewChannel = async (recepient, duration) => {
-    // creates a New Safe for this wallet , Channel specific
-    // enable Module
-    const newSafeAddress = await createSafeWallet();
-
-    // const newSafeAddress = safeAddress;
-    console.log(newSafeAddress);
-    if (newSafeAddress) {
-      // Add record in the module
-      const module_contract = new Contract(
+    const getUserTokenId = async () => {
+      const Module_contract = new Contract(
         channelModule_Goerli,
         Module_ABI,
-        signer
+        provider
       );
+      const senderAddress = await signer.getAddress();
+      const tokenId = await Module_contract.senderTokenInfo(senderAddress);
+      console.log(tokenId);
 
-      const tokenId = await getUserTokenId();
+      /// maybe need to convert the Token ID
+      return tokenId;
+    };
 
-      const tx = await module_contract.createChannel(
-        newSafeAddress,
-        peerAddress,
-        channelDuration,
-        tokenId
-      );
+    const createNewChannel = async (recepient, duration) => {
+      // creates a New Safe for this wallet , Channel specific
+      // enable Module
+      const newSafeAddress = await createSafeWallet();
 
-      await tx.wait();
+      // const newSafeAddress = safeAddress;
+      console.log(newSafeAddress);
+      if (newSafeAddress) {
+        // Add record in the module
+        const module_contract = new Contract(
+          channelModule_Goerli,
+          Module_ABI,
+          signer
+        );
 
-      console.log(tx);
+        const tokenId = await getUserTokenId();
 
-      // const newSafeAddress = "0x9B855D0Edb3111891a6A0059273904232c74815D";
-      // send  a conversation to the recpient informing them regarding the channel creation , along with the safeAddress
-      await sendMessage(
-        `message:Here is our Safe Smart Contract wallet Address for the Channel:${newSafeAddress},safeAddress:${newSafeAddress},totalAmount:${0}`,
-        peerAddress
-      );
-    } else {
-      console.log("NO SAFE ADDR FOUND");
-    }
-    // }
-  };
+        const tx = await module_contract.createChannel(
+          newSafeAddress,
+          peerAddress,
+          channelDuration,
+          tokenId
+        );
+
+        await tx.wait();
+
+        console.log(tx);
+
+        // const newSafeAddress = "0x9B855D0Edb3111891a6A0059273904232c74815D";
+        // send  a conversation to the recpient informing them regarding the channel creation , along with the safeAddress
+        await sendMessage(
+          `message:Here is our Safe Smart Contract wallet Address for the Channel:${newSafeAddress},safeAddress:${newSafeAddress},totalAmount:${0}`,
+          peerAddress
+        );
+      } else {
+        console.log("NO SAFE ADDR FOUND");
+      }
+    };
+  }
 
   // Need to add the funds before to the Channel
   const addFundsToSafe = async () => {
@@ -347,12 +347,6 @@ const Sender = () => {
   };
 
   const payRecepientViaChannel = async () => {
-    // / generate the Message to be signed
-    const msg = generateSignMessage(safeAddress, totalAmount);
-
-    /// sign the Message
-    const signature = await walletClient.signMessage(msg);
-
     const conversation = await xmtp_client.conversations.newConversation(
       "0x9B855D0Edb3111891a6A0059273904232c74815D"
     );
@@ -364,6 +358,14 @@ const Sender = () => {
     const safeAddressFromXmtp = partialmessage[1];
     const partialamount = partial[2].split(":");
     const owedAmountByXmtp = partialamount[1];
+    const transAmount = parseEther(currAmount);
+    const totalAmount = owedAmountByXmtp + transAmount;
+
+    // / generate the Message to be signed
+    const msg = generateSignMessage(safeAddress, totalAmount);
+
+    /// sign the Message
+    const signature = await walletClient.signMessage(msg);
 
     await setReceiverAddress(safeAddressFromXmtp);
 
@@ -371,8 +373,6 @@ const Sender = () => {
     const eas = new EASService(provider, signer);
     const senderAdd = await signer.getAddress();
     const channelId = await getChannelId();
-    const transAmount = parseEther(amount);
-    const totalAmount = owedAmountByXmtp + transAmount;
     console.log(senderAdd);
 
     // const {senderAdd, receiverAdd, transAmount, safeAdd, channelID, totalAmount} = {senderAdd : "0x9B855D0Edb3111891a6A0059273904232c74815D",receiverAdd :"0x72D7968514E5e6659CeBB5CABa7E02CFf8eda389",safeAdd : "0x898d0DBd5850e086E6C09D2c83A26Bb5F1ff8C33",transAmount : 12, channelID : 20, totalAmount : 30}
@@ -414,7 +414,12 @@ const Sender = () => {
             </div>
             <div>
               <div className="flex">
-                <button onClick={addFundsToSafe} className="px-7 mx-5 py-1.5 rounded-xl bg-white text-indigo-500 border border-indigo-500 font-semibold hover:scale-105 duration-200">add funds</button>
+                <button
+                  onClick={addFundsToSafe}
+                  className="px-7 mx-5 py-1.5 rounded-xl bg-white text-indigo-500 border border-indigo-500 font-semibold hover:scale-105 duration-200"
+                >
+                  add funds
+                </button>
                 <button
                   onClick={onOpen1}
                   className="px-7 mx-5 py-1.5 rounded-xl bg-white text-indigo-500 border border-indigo-500 font-semibold hover:scale-105 duration-200"
@@ -504,9 +509,16 @@ const Sender = () => {
                     <p className="mt-3 font-semibold">{uid}</p>
                   </div>
                   <div className="mt-4 flex justify-between w-full">
-                  <input className="border boder-black px-4 py-1 rounded-xl" onChange={(e) => setCurrAmount(e.target.value)} placeholder="amount"></input>
-                    <button className="px-7 mx-5 py-1.5 rounded-xl bg-white text-indigo-500 border border-indigo-500 font-semibold hover:scale-105 duration-200">
-                        Pay
+                    <input
+                      className="border boder-black px-4 py-1 rounded-xl"
+                      onChange={(e) => setCurrAmount(e.target.value)}
+                      placeholder="amount"
+                    ></input>
+                    <button
+                      onClick={payRecepientViaChannel}
+                      className="px-7 mx-5 py-1.5 rounded-xl bg-white text-indigo-500 border border-indigo-500 font-semibold hover:scale-105 duration-200"
+                    >
+                      Pay
                     </button>
                   </div>
                 </div>
