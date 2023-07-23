@@ -382,13 +382,13 @@ const Sender = () => {
 
     /// send an XMTP message along with signature itself
     await sendMessage(
-      `message:${safeAddressFromXmtp},safeadd:${safeAddressFromXmtp},totalAmount:${totalAmount},easurl:${url},easuid:${uid},signature:${signature},currentAmount:${currAmount}`
+      `message:${safeAddressFromXmtp},safeadd:${safeAddressFromXmtp},totalAmount:${totalAmount},easurl:${url},easuid:${uid},signature:${signature},currentAmount:${currAmount}`,"0x72D7968514E5e6659CeBB5CABa7E02CFf8eda389"
     );
   };
 
   const generateSignMessage = (safeAddress, totalAmount) => {
     // safeAddress , totalOwedAmount
-    const msg = encodePacked(["address", "uint256"], [safeAddress, amount]);
+    const msg = encodePacked(["address", "uint256"], [safeAddress, totalAmount]);
     return msg;
   };
 
