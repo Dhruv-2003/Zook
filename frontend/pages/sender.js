@@ -78,19 +78,19 @@ const Sender = () => {
       console.log(messagesInConversation);
     }
     const messageLength = await incomingMessages.length;
-    const lastmessage = incomingMessages[messageLength - 1].content
-    console.log(lastmessage)
+    const lastmessage = incomingMessages[messageLength - 1].content;
+    console.log(lastmessage);
   };
 
-  function split(){
-    const text = ""
-    const partial = text.split(",")
-    const partialmessage = partial[1].split(":")
-    const safeAddressFromXmtp = partialmessage[1]
-    const partialamount = partial[2].split(":")
-    const owedAmountByXmtp = partialamount[1]
-    console.log(safeAddressFromXmtp)
-    console.log(owedAmountByXmtp)
+  function split() {
+    const text = "";
+    const partial = text.split(",");
+    const partialmessage = partial[1].split(":");
+    const safeAddressFromXmtp = partialmessage[1];
+    const partialamount = partial[2].split(":");
+    const owedAmountByXmtp = partialamount[1];
+    console.log(safeAddressFromXmtp);
+    console.log(owedAmountByXmtp);
   }
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -100,8 +100,8 @@ const Sender = () => {
   const [incomingMessages, setIncomingMessages] = useState();
   const [uid, setUid] = useState();
   const [url, setUrl] = useState();
-  const [receiverAddress, setReceiverAddress] = useState()
-  const [totalAmountOwed, setTotalAmountOwed] = useState()
+  const [receiverAddress, setReceiverAddress] = useState();
+  const [totalAmountOwed, setTotalAmountOwed] = useState();
 
   const router = useRouter();
 
@@ -245,8 +245,9 @@ const Sender = () => {
     // creates a New Safe for this wallet , Channel specific
     // enable Module
     const newSafeAddress = await createSafeWallet();
-    console.log(newSafeAddress);
 
+    // const newSafeAddress = safeAddress;
+    console.log(newSafeAddress);
     if (newSafeAddress) {
       // Add record in the module
       const module_contract = new Contract(
@@ -352,14 +353,14 @@ const Sender = () => {
     const partialamount = partial[2].split(":");
     const owedAmountByXmtp = partialamount[1];
 
-    await setReceiverAddress(safeAddressFromXmtp)
+    await setReceiverAddress(safeAddressFromXmtp);
 
     // / create an attestation
     const eas = new EASService(provider, signer);
     const senderAdd = await signer.getAddress();
     const channelId = await getChannelId();
     const transAmount = parseEther(amount);
-    const totalAmount = partialamount + transAmount;
+    const totalAmount = owedAmountByXmtp + transAmount;
     console.log(senderAdd);
 
     // const {senderAdd, receiverAdd, transAmount, safeAdd, channelID, totalAmount} = {senderAdd : "0x9B855D0Edb3111891a6A0059273904232c74815D",receiverAdd :"0x72D7968514E5e6659CeBB5CABa7E02CFf8eda389",safeAdd : "0x898d0DBd5850e086E6C09D2c83A26Bb5F1ff8C33",transAmount : 12, channelID : 20, totalAmount : 30}
@@ -372,9 +373,9 @@ const Sender = () => {
       totalAmount
     );
 
-    await setUid(uid)
-    await setUrl(url)
-    setTotalAmountOwed(totalAmount)
+    await setUid(uid);
+    await setUrl(url);
+    setTotalAmountOwed(totalAmount);
 
     /// send an XMTP message along with signature itself
     await sendMessage(
@@ -462,22 +463,30 @@ const Sender = () => {
               </div>
               <div className="w-1/2 flex flex-col justify-end border border-indigo-500 ml-5 mt-5 rounded-xl">
                 <div className="flex flex-col mx-auto py-2 mt-3">
-                    <div className="mx-3 flex flex-col justify-start">
-                        <p className="text-indigo-500 text-xl font-semibold">Receiver's Address</p>
-                        <p className="mt-3 font-semibold">{receiverAddress}</p>
-                    </div>
-                    <div className="mx-3 flex flex-col justify-start mt-3">
-                        <p className="text-indigo-500 text-xl font-semibold">Total Amount Owed</p>
-                        <p className="mt-3 font-semibold">{totalAmountOwed}</p>
-                    </div>
-                    <div className="mx-3 flex flex-col justify-start mt-3">
-                        <p className="text-indigo-500 text-xl font-semibold">EAS URL</p>
-                        <p className="mt-3 font-semibold">{url}</p>
-                    </div>
-                    <div className="mx-3 flex flex-col justify-start mt-3">
-                        <p className="text-indigo-500 text-xl font-semibold">EAS UID</p>
-                        <p className="mt-3 font-semibold">{uid}</p>
-                    </div>
+                  <div className="mx-3 flex flex-col justify-start">
+                    <p className="text-indigo-500 text-xl font-semibold">
+                      Receiver's Address
+                    </p>
+                    <p className="mt-3 font-semibold">{receiverAddress}</p>
+                  </div>
+                  <div className="mx-3 flex flex-col justify-start mt-3">
+                    <p className="text-indigo-500 text-xl font-semibold">
+                      Total Amount Owed
+                    </p>
+                    <p className="mt-3 font-semibold">{totalAmountOwed}</p>
+                  </div>
+                  <div className="mx-3 flex flex-col justify-start mt-3">
+                    <p className="text-indigo-500 text-xl font-semibold">
+                      EAS URL
+                    </p>
+                    <p className="mt-3 font-semibold">{url}</p>
+                  </div>
+                  <div className="mx-3 flex flex-col justify-start mt-3">
+                    <p className="text-indigo-500 text-xl font-semibold">
+                      EAS UID
+                    </p>
+                    <p className="mt-3 font-semibold">{uid}</p>
+                  </div>
                 </div>
               </div>
             </div>

@@ -3,6 +3,112 @@ export const Module_ABI = [
     inputs: [
       {
         internalType: "address",
+        name: "safe",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "recepient",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "duration",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+    ],
+    name: "createChannel",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "channelId",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "createTokenForSender",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "channelId",
+        type: "uint256",
+      },
+    ],
+    name: "executeCloseChannel",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "channelId",
+        type: "uint256",
+      },
+      {
+        internalType: "bytes32",
+        name: "_hash",
+        type: "bytes32",
+      },
+      {
+        internalType: "bytes",
+        name: "signature",
+        type: "bytes",
+      },
+      {
+        internalType: "uint96",
+        name: "amount",
+        type: "uint96",
+      },
+    ],
+    name: "executeWithdraw",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "channelId",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "newExpiration",
+        type: "uint256",
+      },
+    ],
+    name: "extendChannelDuration",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
         name: "recepientNFTAddr",
         type: "address",
       },
@@ -76,99 +182,6 @@ export const Module_ABI = [
   {
     inputs: [
       {
-        internalType: "address",
-        name: "safe",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "recepient",
-        type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "duration",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "tokenId",
-        type: "uint256",
-      },
-    ],
-    name: "createChannel",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "channelId",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "channelId",
-        type: "uint256",
-      },
-    ],
-    name: "executeCloseChannel",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "channelId",
-        type: "uint256",
-      },
-      {
-        internalType: "bytes32",
-        name: "_hash",
-        type: "bytes32",
-      },
-      {
-        internalType: "bytes",
-        name: "signature",
-        type: "bytes",
-      },
-      {
-        internalType: "uint96",
-        name: "amount",
-        type: "uint96",
-      },
-    ],
-    name: "executeWithdraw",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "channelId",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "newExpiration",
-        type: "uint256",
-      },
-    ],
-    name: "extendChannelDuration",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
         internalType: "bytes32",
         name: "hash",
         type: "bytes32",
@@ -235,6 +248,25 @@ export const Module_ABI = [
   {
     inputs: [
       {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    name: "senderTokenInfo",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "bytes",
         name: "sig",
         type: "bytes",
@@ -264,6 +296,19 @@ export const Module_ABI = [
   {
     inputs: [],
     name: "totalChannels",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "totalTokenIdsGenerated",
     outputs: [
       {
         internalType: "uint256",

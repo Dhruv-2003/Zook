@@ -43,6 +43,9 @@ contract ChannelModule {
     // Channel Address => channelId
     mapping(address => uint) public channelAddressInfos;
 
+    mapping(address => uint) public senderTokenInfo;
+    uint public totalTokenIdsGenerated = 1;
+
     constructor(address recepientNFTAddr) {
         recepientNFT = ERC1155Recepient(recepientNFTAddr);
     }
@@ -51,6 +54,12 @@ contract ChannelModule {
         ChannelData memory _channelData = channelInfos[channelId];
         require(_channelData.isInitialised, "NOT YET INITIALISED");
         _;
+    }
+
+    function createTokenForSender() public returns (uint tokenId) {
+        tokenId = totalTokenIdsGenerated;
+        senderTokenInfo[msg.sender] = tokenId;
+        totalTokenIdsGenerated += 1;
     }
 
     // initialise the channel if not there
